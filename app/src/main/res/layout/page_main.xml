@@ -111,6 +111,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingTop="50dp"
+                android:paddingBottom="30dp"
                 android:orientation="horizontal">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -125,8 +127,6 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingTop="50dp"
-                        android:paddingBottom="20dp"
                         android:text="어제, 오늘"
                         android:textColor="@color/black"
                         android:textSize="20sp"
@@ -150,12 +150,127 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
+                    android:background="@drawable/color_main_check_back"
+                    android:paddingTop="10dp"
+                    android:paddingStart="20dp"
+                    android:paddingBottom="10dp"
+                    android:layout_weight="0.5">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:text="어제"
+                                android:textColor="@color/black"
+                                android:textStyle="bold"
+                                android:textSize="10sp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:gravity="bottom"
+                                android:paddingLeft="3dp"
+                                android:text="12:00 기준"
+                                android:textColor="@color/black"
+                                android:textSize="7sp"/>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:text="오늘"
+                                android:textColor="@color/black"
+                                android:textStyle="bold"
+                                android:textSize="10sp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:gravity="bottom"
+                                android:paddingLeft="3dp"
+                                android:text="현재 기준"
+                                android:textColor="@color/black"
+                                android:textSize="7sp"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1">
+<!--                            id -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:text="17 ℃"
+                                android:textColor="@color/black"
+                                android:textStyle="bold"
+                                android:textSize="10sp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:text="17 ℃"
+                                android:textColor="@color/black"
+                                android:textStyle="bold"
+                                android:textSize="10sp"/>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:text="17 ℃"
+                                android:textColor="@color/black"
+                                android:textStyle="bold"
+                                android:textSize="10sp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:text="17 ℃"
+                                android:textColor="@color/black"
+                                android:textStyle="bold"
+                                android:textSize="10sp"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#F2F2F2"
+                    android:layout_weight="2"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="30dp"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
                     android:layout_weight="0.5">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="어제, 오늘"
+                        android:text="이번주 수분량"
                         android:textColor="@color/black"
                         android:textSize="20sp"
                         android:textStyle="bold" />
