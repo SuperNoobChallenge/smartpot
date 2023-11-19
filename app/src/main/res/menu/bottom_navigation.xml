@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/navigation_1"
+        android:icon="@drawable/icon_bottom_main_page"
+        android:enabled="true"
+        android:state_selected="true"
+        app:showAsAction="ifRoom"
+        android:title=""/>
+
+    <item
+        android:id="@+id/navigation_2"
+        android:icon="@drawable/icon_bottom_diary_page"
+        android:title=""/>
+
+    <item
+        android:id="@+id/navigation_3"
+        android:icon="@drawable/icon_bottom_store_page"
+        android:title=""/>
+
+    <item
+        android:id="@+id/navigation_4"
+        android:icon="@drawable/icon_bottom_my_page"
+        android:title=""/>
+
+
+</menu>
