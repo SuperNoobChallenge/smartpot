@@ -56,11 +56,6 @@ class Fragment_Main_page: Fragment() {
         val pagerAdapter = ScreenSlidePagerAdapter(requireActivity())
         viewPager.adapter = pagerAdapter
 
-        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                updateIndicators(position)
-            }
-        })
         viewPager.adapter?.notifyItemInserted(0)
         viewPager.setCurrentItem(1, true)
 
@@ -70,6 +65,7 @@ class Fragment_Main_page: Fragment() {
 
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
+                updateIndicators(position)
                 if (position == fragments.size - 1) {
                     addButton.visibility = View.VISIBLE
                     addText.visibility = View.VISIBLE
@@ -118,33 +114,45 @@ class Fragment_Main_page: Fragment() {
     }
 
     private fun updateIndicators(currentPosition: Int) {
-        indicatorLayout.removeAllViews()
+        // Do not remove existing views, just update the existing ones and add new ones
+
+        // Check if the number of indicators matches the number of fragments
+        val existingIndicatorCount = indicatorLayout.childCount
+
         for (i in fragments.indices) {
-            val indicator = View(context)
-            val indicatorSize = resources.getDimensionPixelSize(R.dimen.indicator_size)
-            val indicatorMargin = resources.getDimensionPixelSize(R.dimen.indicator_margin)
-            val params = LinearLayout.LayoutParams(indicatorSize, indicatorSize)
-            params.setMargins(indicatorMargin, 0, indicatorMargin, 0)
-            indicator.layoutParams = params
+            val indicator: View
+
+            if (i < existingIndicatorCount) {
+                // If the indicator already exists, reuse it
+                indicator = indicatorLayout.getChildAt(i)
+            } else {
+                // If the indicator does not exist, create a new one
+                indicator = View(context)
+                val indicatorSize = resources.getDimensionPixelSize(R.dimen.indicator_size)
+                val indicatorMargin = resources.getDimensionPixelSize(R.dimen.indicator_margin)
+                val params = LinearLayout.LayoutParams(indicatorSize, indicatorSize)
+                params.setMargins(indicatorMargin, 0, indicatorMargin, 0)
+                indicator.layoutParams = params
+                indicatorLayout.addView(indicator)
+            }
+
+            // Update the background resource based on the current position
             indicator.setBackgroundResource(
                 if (i == currentPosition) R.drawable.icon_main_selected_indicator
                 else R.drawable.icon_main_unselected_indiactor
             )
-            indicatorLayout.addView(indicator)
         }
     }
 
 
-    fun addNewPage() {
-        val currentPosition = viewPager.currentItem
 
+    fun addNewPage() {
         if (fragments.lastOrNull() is Fragment_Blank2) {
             fragments.removeAt(fragments.size - 1)
             viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
         }
 
         fragments.add(Fragment_Blank.newInstance(fragments.size + 1))
-        updateIndicators(0)
         addNewPage2()
     }
     fun addNewPage2() {
@@ -153,7 +161,6 @@ class Fragment_Main_page: Fragment() {
         fragments.add(Fragment_Blank2.newInstance(fragments.size + 1))
         viewPager.adapter?.notifyItemInserted(currentPosition + 1)
         viewPager.setCurrentItem(0, true)
-        updateIndicators(0)
     }
     private fun initChart() {
         chart.description.isEnabled = false
