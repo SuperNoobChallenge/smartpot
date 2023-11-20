@@ -16,8 +16,8 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="29dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="bottom"
                 android:src="@drawable/icon_main_water" />
             <TextView
@@ -29,12 +29,17 @@
                 android:textStyle="bold"
                 android:textSize="20sp"/>
         </LinearLayout>
-        <ImageView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="5"
+            android:layout_height="match_parent"
+            android:gravity="end"
+            android:paddingEnd="10dp"
+            android:layout_weight="1">
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
             android:src="@drawable/icon_main_star" />
+        </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -68,9 +73,9 @@
             <Button
                 android:layout_width="50dp"
                 android:layout_height="14dp"
-                android:background="@drawable/costom_button_main_2"
+                android:background="@drawable/costom_button_main_1"
                 android:text="키우는법"
-                android:textSize="8sp"
+                android:textSize="7sp"
                 android:textStyle="bold"
                 android:textColor="@color/white"/>
             <LinearLayout
@@ -79,14 +84,14 @@
             <Button
                 android:layout_width="50dp"
                 android:layout_height="14dp"
-                android:background="@drawable/costom_button_main_1"
-                android:text="기기연동"
-                android:textSize="8sp"
+                android:background="@drawable/costom_button_main_2"
+                android:text="기기연동 +"
+                android:textSize="7sp"
                 android:textStyle="bold"
                 android:textColor="#54B22D"/>
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="120dp"/>
+                android:layout_height="100dp"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -99,8 +104,8 @@
                 android:orientation="horizontal"
                 android:paddingBottom="6dp">
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:src="@drawable/icon_main_thermometer"/>
                 <TextView
                     android:layout_width="wrap_content"
@@ -117,9 +122,9 @@
                 android:orientation="horizontal"
                 android:paddingBottom="6dp">
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/icon_main_thermometer"/>
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/icon_main_null_water"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -134,9 +139,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/icon_main_thermometer"/>
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/icon_main_full_water"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"

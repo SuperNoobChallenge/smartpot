@@ -85,7 +85,7 @@ class Fragment_Main_page: Fragment() {
         return view
     }
     private fun showAddButtonDialog() {
-        val items = arrayOf("Heart Hoya", "Stucky", "Cactus", "Fish Bone", "Devil Orchid")
+        val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
 
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Choose a plant")
