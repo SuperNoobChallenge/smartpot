@@ -1,6 +1,7 @@
 package com.example.smartpot
 
 import android.app.AlertDialog
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -60,7 +62,7 @@ class Fragment_Main_page: Fragment() {
             }
         })
         viewPager.adapter?.notifyItemInserted(0)
-        viewPager.setCurrentItem(0, true)
+        viewPager.setCurrentItem(1, true)
 
         addButton.setOnClickListener {
             showAddButtonDialog()
@@ -72,6 +74,10 @@ class Fragment_Main_page: Fragment() {
                     addButton.visibility = View.VISIBLE
                     addText.visibility = View.VISIBLE
                     addImage.visibility = View.VISIBLE
+                }else{
+                    addButton.visibility = View.GONE
+                    addText.visibility = View.GONE
+                    addImage.visibility = View.GONE
                 }
             }
         })
@@ -113,7 +119,7 @@ class Fragment_Main_page: Fragment() {
 
     private fun updateIndicators(currentPosition: Int) {
         indicatorLayout.removeAllViews()
-        for (i in 0 until fragments.size) {
+        for (i in fragments.indices) {
             val indicator = View(context)
             val indicatorSize = resources.getDimensionPixelSize(R.dimen.indicator_size)
             val indicatorMargin = resources.getDimensionPixelSize(R.dimen.indicator_margin)
@@ -128,18 +134,27 @@ class Fragment_Main_page: Fragment() {
         }
     }
 
+
     fun addNewPage() {
         val currentPosition = viewPager.currentItem
+
+        if (fragments.lastOrNull() is Fragment_Blank2) {
+            fragments.removeAt(fragments.size - 1)
+            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
+        }
+
         fragments.add(Fragment_Blank.newInstance(fragments.size + 1))
+        updateIndicators(0)
+        addNewPage2()
+    }
+    fun addNewPage2() {
+        val currentPosition = viewPager.currentItem
+
+        fragments.add(Fragment_Blank2.newInstance(fragments.size + 1))
         viewPager.adapter?.notifyItemInserted(currentPosition + 1)
         viewPager.setCurrentItem(0, true)
-        updateIndicators(currentPosition)
-        if (currentPosition == fragments.size - 1) {
-            addButton.visibility = View.GONE
-            addText.visibility = View.GONE
-        }
+        updateIndicators(0)
     }
-
     private fun initChart() {
         chart.description.isEnabled = false
         chart.setTouchEnabled(false)
@@ -191,13 +206,13 @@ class Fragment_Main_page: Fragment() {
         val entries = mutableListOf<Entry>()
 
         // 1~7일 동안의 1~7의 값을 가지는 데이터를 entries에 추가
-        entries.add(Entry(1.toFloat(), 100.toFloat()))
-        entries.add(Entry(2.toFloat(), 24.toFloat()))
-        entries.add(Entry(3.toFloat(), 35.toFloat()))
-        entries.add(Entry(4.toFloat(), 46.toFloat()))
-        entries.add(Entry(5.toFloat(), 57.toFloat()))
-        entries.add(Entry(6.toFloat(), 50.toFloat()))
-        entries.add(Entry(7.toFloat(), 1.toFloat()))
+        entries.add(Entry(1.toFloat(), 10.toFloat()))
+        entries.add(Entry(2.toFloat(), 20.toFloat()))
+        entries.add(Entry(3.toFloat(), 30.toFloat()))
+        entries.add(Entry(4.toFloat(), 40.toFloat()))
+        entries.add(Entry(5.toFloat(), 50.toFloat()))
+        entries.add(Entry(6.toFloat(), 60.toFloat()))
+        entries.add(Entry(7.toFloat(), 70.toFloat()))
         val colorString = "#54B22D"
         val color = Color.parseColor(colorString)
         val dataSet = LineDataSet(entries, null)
