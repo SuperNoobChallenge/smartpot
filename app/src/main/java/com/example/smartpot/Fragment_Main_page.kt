@@ -79,9 +79,9 @@ class Fragment_Main_page: Fragment() {
         })
 
         addLimitLine()
-        initChart()
         setChartData()
-
+        chart.invalidate()
+        initChart()
         return view
     }
     private fun showAddButtonDialog() {
@@ -100,17 +100,23 @@ class Fragment_Main_page: Fragment() {
 
         builder.create().show()
     }
-
     private fun addLimitLine() {
-        val limitLine = LimitLine(50f, "Limit") // 가로 점선의 위치 (50%)와 라벨 설정
-        limitLine.lineColor = Color.RED // 점선 색상 설정
-        limitLine.lineWidth = 2f // 점선 두께 설정
+        // 가로선을 추가할 위치와 라벨 설정
+        val limitLine = LimitLine(50f, "50%")
 
-        val leftAxis: YAxis = chart.axisLeft
-        leftAxis.removeAllLimitLines()
-        leftAxis.addLimitLine(limitLine)
-        leftAxis.axisMinimum = 0f
-        leftAxis.axisMaximum = 100f
+
+        // 가로선의 스타일 및 속성 설정
+        val colors = "#B0E19C"
+        limitLine.lineColor = Color.parseColor(colors)
+        limitLine.lineWidth = 1f
+
+        limitLine.enableDashedLine(20f, 20f, 0f)
+        limitLine.labelPosition = LimitLine.LimitLabelPosition.LEFT_TOP
+        // 가로선을 왼쪽 Y 축에 추가
+        val yAxisLeft: YAxis = chart.axisLeft
+        yAxisLeft.addLimitLine(limitLine)
+        yAxisLeft.axisMinimum = 0f
+        yAxisLeft.axisMaximum = 100f
     }
 
     private fun updateIndicators(currentPosition: Int) {
@@ -171,18 +177,7 @@ class Fragment_Main_page: Fragment() {
 
         val xAxis = chart.xAxis
         xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.axisLineWidth = 3f
-
-        xAxis.valueFormatter = object : ValueFormatter() {
-            override fun getFormattedValue(value: Float): String {
-                val currentDate = getCurrentDate()
-                val calendar = Calendar.getInstance()
-                calendar.time = currentDate
-                calendar.add(Calendar.DAY_OF_MONTH, value.toInt() - 6) // -6을 추가하여 역순으로 날짜를 계산
-                val formattedDate = SimpleDateFormat("MM/dd", Locale.getDefault()).format(calendar.time)
-                return formattedDate
-            }
-        }
+        xAxis.axisLineWidth = 2f
 
         xAxis.setCenterAxisLabels(false)
 
@@ -191,17 +186,30 @@ class Fragment_Main_page: Fragment() {
         val xLabels = chart.xAxis
 
         xLabels.valueFormatter = object : ValueFormatter() {
-            override fun getAxisLabel(value: Float, axis: AxisBase?): String {
+            override fun getFormattedValue(value: Float): String {
                 val currentDate = getCurrentDate()
                 val calendar = Calendar.getInstance()
                 calendar.time = currentDate
-                calendar.add(Calendar.DAY_OF_MONTH, value.toInt() - 6)
+                calendar.add(Calendar.DAY_OF_MONTH, value.toInt() - 7)
                 val formattedDate = SimpleDateFormat("MM/dd", Locale.getDefault()).format(calendar.time)
                 val dayOfWeek = SimpleDateFormat("E", Locale.getDefault()).format(calendar.time)
                 return "$formattedDate"
             }
         }
 
+        // Y 축 설정
+        val yAxisLeft: YAxis = chart.axisLeft
+        yAxisLeft.isEnabled = true // 왼쪽 Y 축 활성화
+        yAxisLeft.axisMinimum = 0f
+        yAxisLeft.axisMaximum = 100f
+        yAxisLeft.setDrawLabels(false)
+        yAxisLeft.setDrawGridLines(false)
+
+        val yAxisRight: YAxis = chart.axisRight
+        yAxisRight.isEnabled = false // 오른쪽 Y 축 비활성화
+        addLimitLine()
+        setChartData()
+        chart.invalidate()
     }
 
     private fun getCurrentDate(): Date {
@@ -220,12 +228,16 @@ class Fragment_Main_page: Fragment() {
         entries.add(Entry(5.toFloat(), 50.toFloat()))
         entries.add(Entry(6.toFloat(), 60.toFloat()))
         entries.add(Entry(7.toFloat(), 70.toFloat()))
+
         val colorString = "#54B22D"
         val color = Color.parseColor(colorString)
         val dataSet = LineDataSet(entries, null)
 
         dataSet.color = color
-        dataSet.setFormSize(0f) // 아이콘 크기를 0으로 설정
+        dataSet.setFormSize(10f) // 아이콘 크기를 0으로 설정
+
+        dataSet.lineWidth = 2f
+
         val lineData = LineData(dataSet)
         chart.data = lineData
         chart.invalidate()
