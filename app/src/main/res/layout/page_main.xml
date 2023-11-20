@@ -107,11 +107,18 @@
                     android:layout_height="match_parent"
                     android:layout_weight="2" />
             </LinearLayout>
-
+            <LinearLayout
+                android:id="@+id/indicatorLayout"
+                android:paddingTop="16dp"
+                android:paddingBottom="25dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal|bottom"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingTop="50dp"
+                android:paddingTop="20dp"
                 android:paddingBottom="30dp"
                 android:orientation="horizontal">
                 <LinearLayout
@@ -145,7 +152,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="2"/>
+                    android:layout_weight="4"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -212,8 +219,8 @@
                             android:layout_weight="1">
 <!--                            id -->
                             <ImageView
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
+                                android:layout_width="35dp"
+                                android:layout_height="35dp"
                                 android:src="@drawable/icon_main_amount_of_water"/>
 
                             <TextView
@@ -226,8 +233,8 @@
                                 android:textSize="16sp"/>
 
                             <ImageView
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
+                                android:layout_width="35dp"
+                                android:layout_height="35dp"
                                 android:src="@drawable/icon_main_thermometer"/>
 
                             <TextView
@@ -245,8 +252,8 @@
                             android:paddingTop="10dp"
                             android:layout_weight="1">
                             <ImageView
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
+                                android:layout_width="35dp"
+                                android:layout_height="35dp"
                                 android:src="@drawable/icon_main_amount_of_water"/>
 
                             <TextView
@@ -256,29 +263,24 @@
                                 android:text="17 ℃"
                                 android:textColor="@color/black"
                                 android:textStyle="bold"
-                                android:textSize="16sp"/>
+                                android:textSize="20sp"/>
 
                             <ImageView
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
+                                android:layout_width="35dp"
+                                android:layout_height="35dp"
                                 android:src="@drawable/icon_main_thermometer"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
                                 android:gravity="bottom"
-                                android:text="17 ℃"
+                                android:text="18 ℃"
                                 android:textColor="@color/black"
                                 android:textStyle="bold"
-                                android:textSize="16sp"/>
+                                android:textSize="20sp"/>
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#F2F2F2"
-                    android:layout_weight="2"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -359,8 +361,8 @@
                                     android:layout_height="0dp"
                                     android:layout_weight="1"/>
                                 <ImageView
-                                    android:layout_width="35dp"
-                                    android:layout_height="25dp"
+                                    android:layout_width="25dp"
+                                    android:layout_height="15dp"
                                     android:src="@drawable/icon_main_line"/>
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -381,8 +383,8 @@
                                     android:layout_height="0dp"
                                     android:layout_weight="1"/>
                                 <ImageView
-                                    android:layout_width="25dp"
-                                    android:layout_height="25dp"
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
                                     android:src="@drawable/icon_main_full_water"/>
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -403,8 +405,8 @@
                                     android:layout_height="0dp"
                                     android:layout_weight="1"/>
                                 <ImageView
-                                    android:layout_width="25dp"
-                                    android:layout_height="25dp"
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
                                     android:src="@drawable/icon_main_null_water"/>
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -418,10 +420,18 @@
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/plant_water_chart"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="300dp"/>
+                android:layout_height="match_parent"
+                android:padding="20dp">
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/plant_water_chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
