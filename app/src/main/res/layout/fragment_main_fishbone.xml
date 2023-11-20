@@ -35,10 +35,10 @@
             android:gravity="end"
             android:paddingEnd="10dp"
             android:layout_weight="1">
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="match_parent"
-            android:src="@drawable/icon_main_star" />
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/icon_main_star" />
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
@@ -50,14 +50,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10dp"
-            android:text="통통한 하트모양의 잎이 사랑스러운"/>
+            android:text="바다의 미묘한 아름다움을 담은 독특하고 세련된 물고기 무늬의 플랜트"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20dp"
             android:textStyle="bold"
-            android:text="하트호야"/>
+            android:text="피쉬본"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -155,13 +155,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingLeft="30dp"
-            android:paddingTop="50dp"
+            android:paddingLeft="10dp"
             android:layout_weight="1">
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/icon_main_harthoya"/>
+                android:layout_width="150dp"
+                android:layout_height="250dp"
+                android:src="@drawable/icon_main_fishbone"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

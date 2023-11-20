@@ -88,13 +88,16 @@ class Fragment_Main_page: Fragment() {
         val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
 
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Choose a plant")
+        builder.setTitle("식물을 선택해주세요")
 
         builder.setItems(items) { _, which ->
             // 다이얼로그에서 항목을 선택했을 때의 처리를 여기에 추가
             when (which) {
-                0 -> addNewPage() // Heart Hoya 선택 시
-                // 다른 항목에 대한 처리 추가
+                0 -> addNewPage_Hearthoya()
+                1 -> addNewPage_Stucky()
+                2 -> addNewPage_Cactus()
+                3 -> addNewPage_Fishbone()
+                4 -> addNewPage_Haunted_house()
             }
         }
 
@@ -152,15 +155,52 @@ class Fragment_Main_page: Fragment() {
 
 
 
-    fun addNewPage() {
+    fun addNewPage_Hearthoya() {
         if (fragments.lastOrNull() is Fragment_Blank2) {
             fragments.removeAt(fragments.size - 1)
             viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
         }
 
-        fragments.add(Fragment_Blank.newInstance(fragments.size + 1))
+        fragments.add(Fragment_main_Hearthoya.newInstance(fragments.size + 1))
         addNewPage2()
     }
+    fun addNewPage_Stucky() {
+        if (fragments.lastOrNull() is Fragment_Blank2) {
+            fragments.removeAt(fragments.size - 1)
+            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
+        }
+
+        fragments.add(Fragment_main_Stucky.newInstance(fragments.size + 1))
+        addNewPage2()
+    }
+    fun addNewPage_Cactus() {
+        if (fragments.lastOrNull() is Fragment_Blank2) {
+            fragments.removeAt(fragments.size - 1)
+            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
+        }
+
+        fragments.add(Fragment_main_Cactus.newInstance(fragments.size + 1))
+        addNewPage2()
+    }
+    fun addNewPage_Fishbone() {
+        if (fragments.lastOrNull() is Fragment_Blank2) {
+            fragments.removeAt(fragments.size - 1)
+            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
+        }
+
+        fragments.add(Fragment_main_Fishbone.newInstance(fragments.size + 1))
+        addNewPage2()
+    }
+    fun addNewPage_Haunted_house() {
+        if (fragments.lastOrNull() is Fragment_Blank2) {
+            fragments.removeAt(fragments.size - 1)
+            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
+        }
+
+        fragments.add(Fragment_main_Haunted_house.newInstance(fragments.size + 1))
+        addNewPage2()
+    }
+
     fun addNewPage2() {
         val currentPosition = viewPager.currentItem
 
