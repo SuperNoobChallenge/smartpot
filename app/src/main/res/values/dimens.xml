@@ -2,4 +2,5 @@
 <resources>
     <dimen name="indicator_size">8dp</dimen>
     <dimen name="indicator_margin">4dp</dimen>
+    <dimen name="view_pager_padding">16dp</dimen>
 </resources>

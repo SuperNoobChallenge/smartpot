@@ -6,11 +6,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var BottomNV: BottomNavigationView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
+
         BottomNV = findViewById(R.id.nav_view)
         BottomNV.setOnNavigationItemSelectedListener { menuItem ->
             bottomNavigate(menuItem.itemId)
@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
         }
         BottomNV.selectedItemId = R.id.navigation_1
     }
+
     private fun bottomNavigate(id: Int) {
         val tag = id.toString()
         val fragmentManager = supportFragmentManager

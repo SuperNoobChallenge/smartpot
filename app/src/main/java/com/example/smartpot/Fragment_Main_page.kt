@@ -1,7 +1,6 @@
 package com.example.smartpot
 
 import android.app.AlertDialog
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,13 +10,11 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -29,6 +26,8 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.math.abs
+
 
 class Fragment_Main_page: Fragment() {
 
@@ -39,7 +38,34 @@ class Fragment_Main_page: Fragment() {
     private lateinit var indicatorLayout: LinearLayout
     private lateinit var chart: LineChart
     private val fragments = ArrayList<Fragment>()
+    // 페이지 이동에 따라 크기가 줄어들고 왼쪽으로 이동하는 효과를 주는 PageTransformer 클래스
+    class CardsPagerTransformerShift(
+        private val baseElevation: Int,
+        private val raisingElevation: Int,
+        private val smallerScale: Float,
+        private val startOffset: Float
+    ) : ViewPager2.PageTransformer {
 
+        // transformPage 메서드는 각 페이지에 대한 변환을 처리합니다.
+        override fun transformPage(page: View, position: Float) {
+            // position 값의 절댓값을 계산
+            val absPosition = Math.abs(position - startOffset)
+
+            // absPosition이 1보다 크거나 같으면 페이지가 완전히 사라진 상태이므로 초기 설정으로 되돌립니다.
+            if (absPosition >= 1) {
+                page.elevation = baseElevation.toFloat()
+                page.scaleY = smallerScale
+            } else {
+                // 페이지가 변환 중인 상태
+
+                // 페이지의 고도를 계산하여 설정
+                page.elevation = ((1 - absPosition) * raisingElevation + baseElevation).toFloat()
+
+                // 페이지의 세로 크기를 계산하여 설정
+                page.scaleY = (smallerScale - 1) * absPosition + 1
+            }
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -82,6 +108,12 @@ class Fragment_Main_page: Fragment() {
         setChartData()
         chart.invalidate()
         initChart()
+
+        val viewPagerPadding = resources.getDimensionPixelSize(R.dimen.view_pager_padding)
+        val screen = requireActivity().windowManager.defaultDisplay.width
+        val startOffset = viewPagerPadding.toFloat() / (screen - 2 * viewPagerPadding)
+        viewPager.setPageTransformer(CardsPagerTransformerShift(0, 50, 0.75f, startOffset))
+
         return view
     }
     private fun showAddButtonDialog() {
