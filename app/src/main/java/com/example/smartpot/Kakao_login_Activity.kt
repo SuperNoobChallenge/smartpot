@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.smartpot.databinding.ActivityKakaoLoginBinding
 import com.kakao.sdk.auth.model.OAuthToken
@@ -24,7 +25,7 @@ class Kakao_login_Activity : AppCompatActivity() {
 
         /** HashKey확인 */
         val keyHash = Utility.getKeyHash(this)
-        TextMsg(this, "HashKey: ${keyHash}")
+//        TextMsg(this, "HashKey: ${keyHash}")
 
         /** KakoSDK init */
         KakaoSdk.init(this, "91a7ed67032c8c01c8ab18e5486817fd")
@@ -48,17 +49,20 @@ class Kakao_login_Activity : AppCompatActivity() {
         // 카카오톡으로 로그인 할 수 없어 카카오계정으로 로그인할 경우 사용됨
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
             if (error != null) {
-                TextMsg(this, "카카오계정으로 로그인 실패 : ${error}")
+//                TextMsg(this, "카카오계정으로 로그인 실패 : ${error}")
+                TextMsg(this, "카카오계정으로 로그인 실패")
                 setLogin(false)
             } else if (token != null) {
                 //TODO: 최종적으로 카카오로그인 및 유저정보 가져온 결과
                 UserApiClient.instance.me { user, error ->
-                    TextMsg(this, "카카오계정으로 로그인 성공 \n\n " +
-                            "token: ${token.accessToken} \n\n " +
-                            "me: ${user}")
+//                    TextMsg(this, "카카오계정으로 로그인 성공 \n\n " +
+//                            "token: ${token.accessToken} \n\n " +
+//                            "me: ${user}")
+                    TextMsg(this, "카카오계정으로 로그인 성공")
                     setLogin(true)
                     val intent = Intent(this@Kakao_login_Activity, MainActivity::class.java)
                     startActivity(intent)
+                    finish()
                 }
             }
         }
@@ -67,7 +71,8 @@ class Kakao_login_Activity : AppCompatActivity() {
         if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
             UserApiClient.instance.loginWithKakaoTalk(this) { token, error ->
                 if (error != null) {
-                    TextMsg(this, "카카오톡으로 로그인 실패 : ${error}")
+//                    TextMsg(this, "카카오톡으로 로그인 실패 : ${error}")
+                    TextMsg(this, "카카오톡으로 로그인 실패")
 
                     // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
                     // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
@@ -78,8 +83,12 @@ class Kakao_login_Activity : AppCompatActivity() {
                     // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
                     UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
                 } else if (token != null) {
-                    TextMsg(this, "카카오톡으로 로그인 성공 ${token.accessToken}")
+//                    TextMsg(this, "카카오톡으로 로그인 성공 ${token.accessToken}")
+                    TextMsg(this, "카카오톡으로 로그인 성공")
                     setLogin(true)
+                    val intent = Intent(this@Kakao_login_Activity, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
                 }
             }
         } else {
@@ -116,14 +125,16 @@ class Kakao_login_Activity : AppCompatActivity() {
     */
 
     private fun TextMsg(act: Activity, msg : String){
-        binding.tvHashKey.text = msg
+    /* binding.tvHashKey.text = msg
+     */
+        Toast.makeText(act, msg, Toast.LENGTH_SHORT).show()
     }
 
-    private fun setLogin(bool: Boolean){
-        binding.btnStartKakaoLogin.visibility = if(bool) View.GONE else View.VISIBLE
-        /* Commenting out logout and unlink functionality
-        binding.btnStartKakaoLogout.visibility = if(bool) View.VISIBLE else View.GONE
-        binding.btnStartKakaoUnlink.visibility = if(bool) View.VISIBLE else View.GONE
-        */
-    }
+private fun setLogin(bool: Boolean){
+binding.btnStartKakaoLogin.visibility = if(bool) View.GONE else View.VISIBLE
+/* Commenting out logout and unlink functionality
+binding.btnStartKakaoLogout.visibility = if(bool) View.VISIBLE else View.GONE
+binding.btnStartKakaoUnlink.visibility = if(bool) View.VISIBLE else View.GONE
+*/
+}
 }
