@@ -1,5 +1,6 @@
 package com.example.smartpot
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -29,37 +30,61 @@ class Fragment_My_page : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Find views
-
-        // Find views
         val btnLogout = view.findViewById<Button>(R.id.btnKakaoLogout)
+        val btnWithdraw = view.findViewById<Button>(R.id.btnKakaoWithdraw)
 
-        // Set click listener for logout button
         btnLogout.setOnClickListener {
-            // Perform Kakao logout
             UserApiClient.instance.logout { error ->
                 if (error != null) {
-                    // Handle the error
                 } else {
-                    // On successful logout, navigate to Kakao_login_Activity
                     val intent = Intent(activity, Kakao_login_Activity::class.java)
                     startActivity(intent)
-                    activity?.finish() // Optional: Finish the current activity
+                    activity?.finish()
                 }
             }
         }
 
-        // Load user information
+        btnWithdraw.setOnClickListener {
+            showWithdrawalConfirmationDialog()
+        }
         loadUserInfo()
+    }
+    private fun showWithdrawalConfirmationDialog() {
+        // Implement a dialog to confirm user withdrawal
+        // You can use AlertDialog or any other custom dialog implementation
+
+        // Example using AlertDialog:
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("탈퇴 확인")
+            .setMessage("서비스에서 탈퇴하시겠습니까?")
+            .setPositiveButton("네") { _, _ ->
+                // 사용자가 탈퇴를 확인함
+                withdrawUser()
+            }
+            .setNegativeButton("아니오") { _, _ ->
+                // 사용자가 탈퇴를 취소함
+            }
+            .show()
+    }
+    private fun withdrawUser() {
+        // Implement user withdrawal logic using Kakao Login API
+        UserApiClient.instance.unlink { unlinkError ->
+            if (unlinkError != null) {
+                // Handle withdrawal error
+            } else {
+                // User successfully withdrawn
+                val intent = Intent(activity, Kakao_login_Activity::class.java)
+                startActivity(intent)
+                activity?.finish()
+            }
+        }
     }
     private fun loadUserInfo() {
         val ivProfileImage = view?.findViewById<ImageView>(R.id.ivProfileImage)
         // Get user information
         UserApiClient.instance.me { user: User?, error ->
             if (error != null) {
-                // Handle the error
             } else if (user != null) {
-                // Update UI with user information
                 updateUI(user.kakaoAccount?.profile?.nickname, user.kakaoAccount?.email)
 
                 // Load and display the profile image
@@ -78,7 +103,6 @@ class Fragment_My_page : Fragment() {
     }
 
     private fun updateUI(name: String?, email: String?) {
-        // Update UI with user information
         val tvName = view?.findViewById<TextView>(R.id.tvKakaoName)
         val tvEmail = view?.findViewById<TextView>(R.id.tvKakaoEmail)
 
