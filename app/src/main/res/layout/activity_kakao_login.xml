@@ -18,19 +18,14 @@
         android:gravity="center"
         android:padding="20dp"
         android:layout_weight="1">
-        <FrameLayout
+        <ImageButton
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/btn_start_kakao_login"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                style="?android:borderlessButtonStyle"/>
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/icon_kakao_login"/>
-        </FrameLayout>
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_kakao_login"
+            style="?android:borderlessButtonStyle"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:id="@+id/btnStartKakaoLogin"/>
     </LinearLayout>
 <!--    <Button-->
 <!--        android:id="@+id/btn_start_kakao_logout"-->
