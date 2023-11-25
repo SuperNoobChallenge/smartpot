@@ -1,6 +1,8 @@
 package com.example.smartpot
 
 import android.app.AlertDialog
+import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -38,6 +40,7 @@ class Fragment_Main_page: Fragment() {
     private lateinit var indicatorLayout: LinearLayout
     private lateinit var chart: LineChart
     private val fragments = ArrayList<Fragment>()
+
     // 페이지 이동에 따라 크기가 줄어들고 왼쪽으로 이동하는 효과를 주는 PageTransformer 클래스
     class CardsPagerTransformerShift(
         private val baseElevation: Int,
@@ -66,6 +69,7 @@ class Fragment_Main_page: Fragment() {
             }
         }
     }
+    private lateinit var sharedPreferences: SharedPreferences
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -89,6 +93,11 @@ class Fragment_Main_page: Fragment() {
             showAddButtonDialog()
         }
 
+        sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
+        val lastPageIndex = sharedPreferences.getInt("lastPageIndex", 0)
+        viewPager.setCurrentItem(lastPageIndex, false)
+
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 updateIndicators(position)
@@ -96,11 +105,13 @@ class Fragment_Main_page: Fragment() {
                     addButton.visibility = View.VISIBLE
                     addText.visibility = View.VISIBLE
                     addImage.visibility = View.VISIBLE
-                }else{
+                } else {
                     addButton.visibility = View.GONE
                     addText.visibility = View.GONE
                     addImage.visibility = View.GONE
                 }
+                // 페이지가 변경될 때마다 현재 페이지 인덱스를 SharedPreferences에 저장
+                sharedPreferences.edit().putInt("lastPageIndex", position).apply()
             }
         })
 
