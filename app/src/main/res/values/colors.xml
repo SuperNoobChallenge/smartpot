@@ -4,4 +4,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="chart_green">#B0E19C</color>
     <color name="colorAccent">#FEE500</color>
+    <color name="login">#C0F5FB</color>
 </resources>

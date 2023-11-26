@@ -5,20 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/chart_green"
+    android:background="@color/login"
     tools:context=".Kakao_login_Activity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:layout_weight="1">
-        <TextView
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Smart Pot"
-            android:textSize="50sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"/>
+            android:src="@drawable/icon_smartpot_logo"
+            android:padding="30dp"/>
     </LinearLayout>
 
     <LinearLayout
