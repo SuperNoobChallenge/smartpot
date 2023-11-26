@@ -95,6 +95,7 @@
                         <Button
                             android:id="@+id/plant_diary_plus_btn"
                             style="?android:borderlessButtonStyle"
+                            android:background="@android:color/transparent"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_gravity="center" />
@@ -131,6 +132,12 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <!-- 동적으로 추가될 View들이 여기에 들어갑니다. -->
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/viewPager_plant_diary"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center"
+                        android:orientation="vertical"/>
                 </LinearLayout>
 
             </ScrollView>

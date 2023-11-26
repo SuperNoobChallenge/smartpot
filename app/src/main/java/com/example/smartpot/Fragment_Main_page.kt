@@ -24,6 +24,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.utils.MPPointF
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -166,9 +167,6 @@ class Fragment_Main_page: Fragment() {
     }
 
     private fun updateIndicators(currentPosition: Int) {
-        // Do not remove existing views, just update the existing ones and add new ones
-
-        // Check if the number of indicators matches the number of fragments
         val existingIndicatorCount = indicatorLayout.childCount
 
         for (i in fragments.indices) {
@@ -265,7 +263,6 @@ class Fragment_Main_page: Fragment() {
         xAxis.setCenterAxisLabels(false)
 
         chart.axisRight.isEnabled = false
-        chart.axisLeft.isEnabled = false
         val xLabels = chart.xAxis
 
         xLabels.valueFormatter = object : ValueFormatter() {
@@ -274,7 +271,8 @@ class Fragment_Main_page: Fragment() {
                 val calendar = Calendar.getInstance()
                 calendar.time = currentDate
                 calendar.add(Calendar.DAY_OF_MONTH, value.toInt() - 7)
-                val formattedDate = SimpleDateFormat("MM/dd", Locale.getDefault()).format(calendar.time)
+                val formattedDate =
+                    SimpleDateFormat("MM/dd", Locale.getDefault()).format(calendar.time)
                 val dayOfWeek = SimpleDateFormat("E", Locale.getDefault()).format(calendar.time)
                 return "$formattedDate"
             }
@@ -295,11 +293,6 @@ class Fragment_Main_page: Fragment() {
         chart.invalidate()
     }
 
-    private fun getCurrentDate(): Date {
-        val calendar = Calendar.getInstance()
-        return calendar.time
-    }
-
     private fun setChartData() {
         val entries = mutableListOf<Entry>()
 
@@ -312,18 +305,40 @@ class Fragment_Main_page: Fragment() {
         entries.add(Entry(6.toFloat(), 60.toFloat()))
         entries.add(Entry(7.toFloat(), 70.toFloat()))
 
+        val icons = arrayOf(
+            R.drawable.test,
+            R.drawable.test,
+            R.drawable.test,
+            R.drawable.test,
+            R.drawable.test,
+            R.drawable.test,
+            R.drawable.test
+        )
+
+        for (i in entries.indices) {
+            entries[i].icon = context?.getDrawable(icons[i])
+        }
+
         val colorString = "#54B22D"
         val color = Color.parseColor(colorString)
         val dataSet = LineDataSet(entries, null)
 
         dataSet.color = color
-        dataSet.setFormSize(10f) // 아이콘 크기를 0으로 설정
-
+        dataSet.setDrawIcons(true)
         dataSet.lineWidth = 2f
 
         val lineData = LineData(dataSet)
+
+//         아래의 주석 코드를 사용하면 차트 위에 데이터 값이 나타납니다.
+         dataSet.setDrawValues(false)
+
         chart.data = lineData
         chart.invalidate()
+    }
+
+    private fun getCurrentDate(): Date {
+        val calendar = Calendar.getInstance()
+        return calendar.time
     }
 
     private inner class ScreenSlidePagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {

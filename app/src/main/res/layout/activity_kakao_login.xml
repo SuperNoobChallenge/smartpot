@@ -32,6 +32,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/icon_kakao_login"
             style="?android:borderlessButtonStyle"
+            android:background="@android:color/transparent"
             android:adjustViewBounds="true"
             android:scaleType="centerInside"
             android:id="@+id/btnStartKakaoLogin"/>

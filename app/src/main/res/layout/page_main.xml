@@ -87,6 +87,7 @@
                                     <Button
                                         android:id="@+id/addButton"
                                         style="?android:borderlessButtonStyle"
+                                        android:background="@android:color/transparent"
                                         android:layout_width="150dp"
                                         android:layout_height="200dp"
                                         android:layout_gravity="center" />
@@ -434,10 +435,10 @@
                     android:layout_height="match_parent"
                     android:paddingTop="30dp"
                     android:layout_weight="0.2">
-                <com.github.mikephil.charting.charts.LineChart
-                    android:id="@+id/plant_water_chart"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp"/>
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/plant_water_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"/>
                 </LinearLayout>
             </LinearLayout>
             <LinearLayout

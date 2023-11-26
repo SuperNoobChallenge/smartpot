@@ -85,7 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="주문관리"
-                style="?android:borderlessButtonStyle"
+                style="@android:style/TextAppearance.DeviceDefault.Large"
                 android:gravity="left|center_vertical"
                 android:textSize="20sp"
                 android:textStyle="bold"/>
@@ -138,8 +138,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=" 나의 쇼핑관리"
-                style="?android:borderlessButtonStyle"
+                android:text="나의 쇼핑관리"
+                style="@android:style/TextAppearance.DeviceDefault.Large"
                 android:gravity="left|center_vertical"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -201,7 +201,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="고객센터"
-                style="?android:borderlessButtonStyle"
+                style="@android:style/TextAppearance.DeviceDefault.Large"
                 android:gravity="left|center_vertical"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -225,6 +225,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="로그아웃"
+            android:background="@android:color/transparent"
             android:layout_marginTop="16dp"
             android:backgroundTint="@color/colorAccent" />
 
@@ -234,6 +235,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="회원 탈퇴"
+            android:background="@android:color/transparent"
             android:layout_marginTop="16dp"
             android:backgroundTint="@color/colorAccent" />
     </LinearLayout>
