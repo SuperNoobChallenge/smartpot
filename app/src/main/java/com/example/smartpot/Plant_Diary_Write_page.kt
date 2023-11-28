@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.material.textfield.TextInputLayout
 
 class Plant_Diary_Write_page : AppCompatActivity() {
     private lateinit var imageView: ImageView
@@ -55,6 +56,16 @@ class Plant_Diary_Write_page : AppCompatActivity() {
             }
         })
 
+        val textInputLayout = findViewById<TextInputLayout>(R.id.textInputLayout)
+        textInputLayout.setEndIconVisible(false)
+
+        val editText = findViewById<EditText>(R.id.editText)
+        editText.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_UP) {
+                textInputLayout.setEndIconVisible(false)
+            }
+            false
+        }
     }
 
     private fun checkCameraPermission(): Boolean {
