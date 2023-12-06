@@ -9,18 +9,21 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="2" />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.5"
-        android:orientation="vertical">
+        android:layout_weight="2" >
+
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:gravity="start"
             android:src="@drawable/icon_plant_diary_back"
             android:backgroundTint="@android:color/transparent"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
+        android:orientation="vertical"
+        android:paddingTop="40dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -106,7 +109,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1.5"
-            android:orientation="vertical">
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -155,6 +163,21 @@
                     android:layout_gravity="center_vertical"
                     android:text="영양제"/>
             </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView"
+                    />
+            </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -162,21 +185,9 @@
             android:layout_weight="2"
             android:orientation="horizontal">
             <FrameLayout
-                android:layout_width="50dp"
-                android:layout_height="50dp">
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/icon_diary_black_write"/>
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="?android:borderlessButtonStyle"
-                    android:backgroundTint="@android:color/transparent"/>
-            </FrameLayout>
-            <FrameLayout
-                android:layout_width="50dp"
-                android:layout_height="50dp">
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="2">
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -185,11 +196,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="?android:borderlessButtonStyle"
+                    android:id="@+id/buttonCamera"
                     android:backgroundTint="@android:color/transparent"/>
             </FrameLayout>
             <FrameLayout
-                android:layout_width="50dp"
-                android:layout_height="50dp">
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="2">
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -200,23 +213,18 @@
                     style="?android:borderlessButtonStyle"
                     android:backgroundTint="@android:color/transparent"/>
             </FrameLayout>
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/buttonCamera"
+                android:layout_weight="1.5"
                 android:background="@drawable/background_plant_diary_write"
                 android:text="작성 완료"
-                android:textColor="@color/white"
-                android:layout_weight="2"/>
+                android:textColor="@color/white" />
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="2" />
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        />
 </LinearLayout>

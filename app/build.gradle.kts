@@ -53,5 +53,5 @@ dependencies {
     implementation("com.kakao.sdk:v2-user:2.15.0")
     implementation("com.github.bumptech.glide:glide:4.12.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
-
+    implementation("com.navercorp.nid:oauth:5.3.0")
 }

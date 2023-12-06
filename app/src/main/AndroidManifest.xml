@@ -37,9 +37,11 @@
         <activity android:name=".MainActivity">
 
         </activity>
+        <activity android:name=".Activity_Login_Jion_Membership">
+
+        </activity>
         <activity android:name=".Plant_Diary_Write_page">
             <!-- 다른 설정들 -->
         </activity>
     </application>
-
 </manifest>

@@ -33,6 +33,13 @@ class Kakao_login_Activity : AppCompatActivity() {
         binding.btnStartKakaoLogin.setOnClickListener {
             kakaoLogin() //로그인
         }
+        binding.btnRegister.setOnClickListener {
+            // 여기에 버튼 클릭 이벤트에 수행할 작업을 추가
+            // 예: 다른 화면으로 이동하는 등의 동작을 수행
+            // 예: 예시로 다른 화면으로 이동하는 코드
+            val intent = Intent(this@Kakao_login_Activity, Activity_Login_Jion_Membership::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun kakaoLogin() {
