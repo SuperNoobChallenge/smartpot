@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -81,9 +82,7 @@ class Fragment_Main_page: Fragment() {
         addText = view.findViewById(R.id.addText)
         addImage = view.findViewById(R.id.addImage)
         indicatorLayout = view.findViewById(R.id.indicatorLayout)
-
         chart = view.findViewById(R.id.plant_water_chart)
-
         val pagerAdapter = ScreenSlidePagerAdapter(requireActivity())
         viewPager.adapter = pagerAdapter
 
@@ -149,7 +148,7 @@ class Fragment_Main_page: Fragment() {
     }
     private fun addLimitLine() {
         // 가로선을 추가할 위치와 라벨 설정
-        val limitLine = LimitLine(50f, "50%")
+        val limitLine = LimitLine(50f)
 
 
         // 가로선의 스타일 및 속성 설정
@@ -255,6 +254,7 @@ class Fragment_Main_page: Fragment() {
         chart.isDragEnabled = false
         chart.setScaleEnabled(false)
         chart.setPinchZoom(false)
+        chart.legend.isEnabled = false
 
         val xAxis = chart.xAxis
         xAxis.position = XAxis.XAxisPosition.BOTTOM
@@ -274,7 +274,8 @@ class Fragment_Main_page: Fragment() {
                 val formattedDate =
                     SimpleDateFormat("MM/dd", Locale.getDefault()).format(calendar.time)
                 val dayOfWeek = SimpleDateFormat("E", Locale.getDefault()).format(calendar.time)
-                return "$formattedDate"
+                val combinedText = "$formattedDate<br>${dayOfWeek.uppercase(Locale.getDefault())}"
+                return formattedDate
             }
         }
 
@@ -297,13 +298,13 @@ class Fragment_Main_page: Fragment() {
         val entries = mutableListOf<Entry>()
 
         // 1~7일 동안의 1~7의 값을 가지는 데이터를 entries에 추가
-        entries.add(Entry(1.toFloat(), 10.toFloat()))
-        entries.add(Entry(2.toFloat(), 20.toFloat()))
-        entries.add(Entry(3.toFloat(), 30.toFloat()))
-        entries.add(Entry(4.toFloat(), 40.toFloat()))
-        entries.add(Entry(5.toFloat(), 50.toFloat()))
-        entries.add(Entry(6.toFloat(), 60.toFloat()))
-        entries.add(Entry(7.toFloat(), 70.toFloat()))
+        entries.add(Entry(1.toFloat(), 30.toFloat()))
+        entries.add(Entry(2.toFloat(), 80.toFloat()))
+        entries.add(Entry(3.toFloat(), 66.toFloat()))
+        entries.add(Entry(4.toFloat(), 59.toFloat()))
+        entries.add(Entry(5.toFloat(), 53.toFloat()))
+        entries.add(Entry(6.toFloat(), 47.toFloat()))
+        entries.add(Entry(7.toFloat(), 40.toFloat()))
 
         val icons = arrayOf(
             R.drawable.test,
@@ -325,12 +326,12 @@ class Fragment_Main_page: Fragment() {
 
         dataSet.color = color
         dataSet.setDrawIcons(true)
-        dataSet.lineWidth = 2f
+        dataSet.lineWidth = 1f
 
         val lineData = LineData(dataSet)
 
 //         아래의 주석 코드를 사용하면 차트 위에 데이터 값이 나타납니다.
-         dataSet.setDrawValues(false)
+        dataSet.setDrawValues(false)
 
         chart.data = lineData
         chart.invalidate()

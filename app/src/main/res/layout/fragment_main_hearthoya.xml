@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="end"
-            android:paddingEnd="10dp"
+            android:paddingEnd="15dp"
             android:layout_weight="1">
             <ImageView
                 android:layout_width="30dp"
@@ -71,27 +71,30 @@
             android:layout_weight="2"
             android:orientation="vertical">
             <Button
-                android:layout_width="50dp"
-                android:layout_height="14dp"
+                android:layout_width="70dp"
+                android:layout_height="20dp"
                 android:background="@drawable/costom_button_main_1"
-                android:text="키우는법"
-                android:textSize="7sp"
+                style="?android:borderlessButtonStyle"
+                android:text="키우는 법  ▽"
+                android:textSize="10sp"
                 android:textStyle="bold"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:id="@+id/harthoya_grow"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="5dp"/>
             <Button
-                android:layout_width="50dp"
-                android:layout_height="14dp"
+                android:layout_width="70dp"
+                android:layout_height="20dp"
                 android:background="@drawable/costom_button_main_2"
+                style="?android:borderlessButtonStyle"
                 android:text="기기연동 +"
-                android:textSize="7sp"
+                android:textSize="10sp"
                 android:textStyle="bold"
                 android:textColor="#54B22D"/>
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"/>
+                android:layout_height="107dp"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
