@@ -213,6 +213,7 @@ class Fragment_Main_page: Fragment() {
 
         fragments.add(Fragment_main_Stucky.newInstance(fragments.size + 1))
         addNewPage2()
+        updateButtonInCurrentFragment()
     }
     fun addNewPage_Cactus() {
         if (fragments.lastOrNull() is Fragment_Blank2) {
@@ -222,6 +223,7 @@ class Fragment_Main_page: Fragment() {
 
         fragments.add(Fragment_main_Cactus.newInstance(fragments.size + 1))
         addNewPage2()
+        updateButtonInCurrentFragment()
     }
     fun addNewPage_Fishbone() {
         if (fragments.lastOrNull() is Fragment_Blank2) {
@@ -231,6 +233,7 @@ class Fragment_Main_page: Fragment() {
 
         fragments.add(Fragment_main_Fishbone.newInstance(fragments.size + 1))
         addNewPage2()
+        updateButtonInCurrentFragment()
     }
     fun addNewPage_Haunted_house() {
         if (fragments.lastOrNull() is Fragment_Blank2) {
@@ -240,6 +243,7 @@ class Fragment_Main_page: Fragment() {
 
         fragments.add(Fragment_main_Haunted_house.newInstance(fragments.size + 1))
         addNewPage2()
+        updateButtonInCurrentFragment()
     }
 
     fun addNewPage2() {
@@ -296,25 +300,40 @@ class Fragment_Main_page: Fragment() {
     }
 
     private fun initializeButtonInCurrentFragment() {
-        // 현재 보이는 프래그먼트의 인덱스 가져오기
         val currentIndex = viewPager.currentItem
 
-        // 현재 보이는 프래그먼트 검색
         val currentFragment = fragments[currentIndex]
 
-        // findViewById를 사용하여 프래그먼트 내의 버튼 또는 뷰에 액세스
-        val buttonInFragment1 = currentFragment.view?.findViewById<Button>(R.id.harthoya_grow)
+        val button_harthoya_grow = currentFragment.view?.findViewById<Button>(R.id.harthoya_grow)
 
-        // 버튼에 클릭 리스너 설정
-        buttonInFragment1?.setOnClickListener {
-            Toast.makeText(requireContext(), "하트호야 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show()
+        button_harthoya_grow?.setOnClickListener {
+            val customDialogFragment = Fragment_CustomDialog_hearhoya()
+            customDialogFragment.show(parentFragmentManager, "custom_dialog")
         }
 
-        val buttonInFragment2 = currentFragment.view?.findViewById<Button>(R.id.stucky_grow)
 
-        // 버튼에 클릭 리스너 설정
-        buttonInFragment2?.setOnClickListener {
+        val button_stucky_grow = currentFragment.view?.findViewById<Button>(R.id.stucky_grow)
+
+        button_stucky_grow?.setOnClickListener {
             Toast.makeText(requireContext(), "스투키 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show()
+        }
+
+        val button_cactus_grow = currentFragment.view?.findViewById<Button>(R.id.cactus_grow)
+
+        button_cactus_grow?.setOnClickListener {
+            Toast.makeText(requireContext(), "선인장 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show()
+        }
+
+        val button_fishbone_grow = currentFragment.view?.findViewById<Button>(R.id.fishbone_grow)
+
+        button_fishbone_grow?.setOnClickListener {
+            Toast.makeText(requireContext(), "피쉬본 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show()
+        }
+
+        val button_haunted_house_grow = currentFragment.view?.findViewById<Button>(R.id.haunted_house_grow)
+
+        button_haunted_house_grow?.setOnClickListener {
+            Toast.makeText(requireContext(), "괴마옥 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 

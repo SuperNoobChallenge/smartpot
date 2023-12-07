@@ -25,7 +25,7 @@ class Kakao_login_Activity : AppCompatActivity() {
 
         /** HashKey확인 */
         val keyHash = Utility.getKeyHash(this)
-//        TextMsg(this, "HashKey: ${keyHash}")
+       // TextMsg(this, "HashKey: ${keyHash}")
 
         /** KakoSDK init */
         KakaoSdk.init(this, "91a7ed67032c8c01c8ab18e5486817fd")
