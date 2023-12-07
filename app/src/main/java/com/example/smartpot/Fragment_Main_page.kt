@@ -112,6 +112,7 @@ class Fragment_Main_page: Fragment() {
                 }
                 // 페이지가 변경될 때마다 현재 페이지 인덱스를 SharedPreferences에 저장
                 sharedPreferences.edit().putInt("lastPageIndex", position).apply()
+                updateButtonInCurrentFragment()
             }
         })
 
@@ -124,7 +125,6 @@ class Fragment_Main_page: Fragment() {
         val screen = requireActivity().windowManager.defaultDisplay.width
         val startOffset = viewPagerPadding.toFloat() / (screen - 2 * viewPagerPadding)
         viewPager.setPageTransformer(CardsPagerTransformerShift(0, 50, 0.75f, startOffset))
-
         return view
     }
     private fun showAddButtonDialog() {
@@ -203,6 +203,7 @@ class Fragment_Main_page: Fragment() {
 
         fragments.add(Fragment_main_Hearthoya.newInstance(fragments.size + 1))
         addNewPage2()
+        updateButtonInCurrentFragment()
     }
     fun addNewPage_Stucky() {
         if (fragments.lastOrNull() is Fragment_Blank2) {
@@ -294,6 +295,34 @@ class Fragment_Main_page: Fragment() {
         chart.invalidate()
     }
 
+    private fun initializeButtonInCurrentFragment() {
+        // 현재 보이는 프래그먼트의 인덱스 가져오기
+        val currentIndex = viewPager.currentItem
+
+        // 현재 보이는 프래그먼트 검색
+        val currentFragment = fragments[currentIndex]
+
+        // findViewById를 사용하여 프래그먼트 내의 버튼 또는 뷰에 액세스
+        val buttonInFragment1 = currentFragment.view?.findViewById<Button>(R.id.harthoya_grow)
+
+        // 버튼에 클릭 리스너 설정
+        buttonInFragment1?.setOnClickListener {
+            Toast.makeText(requireContext(), "하트호야 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show()
+        }
+
+        val buttonInFragment2 = currentFragment.view?.findViewById<Button>(R.id.stucky_grow)
+
+        // 버튼에 클릭 리스너 설정
+        buttonInFragment2?.setOnClickListener {
+            Toast.makeText(requireContext(), "스투키 버튼이 클릭되었습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // 필요한 시점에 이 메서드를 호출하세요. 예를 들어, 인디케이터를 업데이트한 후나 onPageSelected에서 호출할 수 있습니다.
+    private fun updateButtonInCurrentFragment() {
+        initializeButtonInCurrentFragment()
+    }
+
     private fun setChartData() {
         val entries = mutableListOf<Entry>()
 
@@ -302,19 +331,21 @@ class Fragment_Main_page: Fragment() {
         entries.add(Entry(2.toFloat(), 80.toFloat()))
         entries.add(Entry(3.toFloat(), 66.toFloat()))
         entries.add(Entry(4.toFloat(), 59.toFloat()))
-        entries.add(Entry(5.toFloat(), 53.toFloat()))
+        entries.add(Entry(5.toFloat(), 49.toFloat()))
         entries.add(Entry(6.toFloat(), 47.toFloat()))
         entries.add(Entry(7.toFloat(), 40.toFloat()))
 
-        val icons = arrayOf(
-            R.drawable.test,
-            R.drawable.test,
-            R.drawable.test,
-            R.drawable.test,
-            R.drawable.test,
-            R.drawable.test,
-            R.drawable.test
-        )
+        val icons = mutableListOf<Int>()
+
+        for (entry in entries) {
+            val value = entry.y
+            val iconResId = if (value >= 50) {
+                R.drawable.test1
+            } else {
+                R.drawable.test
+            }
+            icons.add(iconResId)
+        }
 
         for (i in entries.indices) {
             entries[i].icon = context?.getDrawable(icons[i])

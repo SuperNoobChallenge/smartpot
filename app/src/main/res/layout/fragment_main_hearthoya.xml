@@ -74,7 +74,6 @@
                 android:layout_width="70dp"
                 android:layout_height="20dp"
                 android:background="@drawable/costom_button_main_1"
-                style="?android:borderlessButtonStyle"
                 android:text="키우는 법  ▽"
                 android:textSize="10sp"
                 android:textStyle="bold"

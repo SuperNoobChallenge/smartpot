@@ -71,22 +71,24 @@
             android:layout_weight="2"
             android:orientation="vertical">
             <Button
-                android:layout_width="50dp"
-                android:layout_height="14dp"
+                android:layout_width="70dp"
+                android:layout_height="20dp"
                 android:background="@drawable/costom_button_main_1"
-                android:text="키우는법"
-                android:textSize="7sp"
+                android:text="키우는 법  ▽"
+                android:textSize="10sp"
                 android:textStyle="bold"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:id="@+id/stucky_grow"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="5dp"/>
             <Button
-                android:layout_width="50dp"
-                android:layout_height="14dp"
+                android:layout_width="70dp"
+                android:layout_height="20dp"
                 android:background="@drawable/costom_button_main_2"
+                style="?android:borderlessButtonStyle"
                 android:text="기기연동 +"
-                android:textSize="7sp"
+                android:textSize="10sp"
                 android:textStyle="bold"
                 android:textColor="#54B22D"/>
             <LinearLayout
