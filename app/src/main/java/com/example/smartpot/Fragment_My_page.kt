@@ -43,7 +43,62 @@ class Fragment_My_page : Fragment() {
                 }
             }
         }
+        val btnOrderHistory = view.findViewById<Button>(R.id.btnOrderHistory)
+        val btnCancelReturnHistory = view.findViewById<Button>(R.id.btnCancelReturnHistory)
+        val btnDeliveryManagement = view.findViewById<Button>(R.id.btnDeliveryManagement)
+        val btnPoint = view.findViewById<Button>(R.id.btnPoint)
+        val btnFavoriteProducts = view.findViewById<Button>(R.id.btnFavoriteProducts)
+        val btnProductReviews = view.findViewById<Button>(R.id.btnProductReviews)
+        val btnRecentProducts = view.findViewById<Button>(R.id.btnRecentProducts)
+        val btnMyInquiries = view.findViewById<Button>(R.id.btnMyInquiries)
 
+        btnOrderHistory.setOnClickListener {
+            // Handle click for Order History button
+            val intent = Intent(activity, Fragment_check::class.java)
+            startActivity(intent)
+        }
+
+        btnCancelReturnHistory.setOnClickListener {
+            // Handle click for Cancel/Return History button
+            val intent = Intent(activity, Fragment_check::class.java)
+            startActivity(intent)
+        }
+
+        btnDeliveryManagement.setOnClickListener {
+            // Handle click for Delivery Management button
+            val intent = Intent(activity, Fragment_check::class.java)
+            startActivity(intent)
+        }
+
+        btnPoint.setOnClickListener {
+            // Handle click for Point button
+            val intent = Intent(activity, Fragment_check::class.java)
+            startActivity(intent)
+        }
+
+        btnFavoriteProducts.setOnClickListener {
+            // Handle click for Favorite Products button
+            val intent = Intent(activity, Fragment_check::class.java)
+            startActivity(intent)
+        }
+
+        btnProductReviews.setOnClickListener {
+            // Handle click for Product Reviews button
+            val intent = Intent(activity, Fragment_check::class.java)
+            startActivity(intent)
+        }
+
+        btnRecentProducts.setOnClickListener {
+            // Handle click for Recent Products button
+            val intent = Intent(activity, Fragment_check::class.java)
+            startActivity(intent)
+        }
+
+        btnMyInquiries.setOnClickListener {
+            // Handle click for My Inquiries button
+            val intent = Intent(activity, Fragment_check::class.java)
+            startActivity(intent)
+        }
         btnWithdraw.setOnClickListener {
             showWithdrawalConfirmationDialog()
         }

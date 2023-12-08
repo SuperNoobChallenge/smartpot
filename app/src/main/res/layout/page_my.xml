@@ -92,6 +92,7 @@
 
             <!-- 주문 내역 -->
             <Button
+                android:id="@+id/btnOrderHistory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text=" 주문 내역"
@@ -103,6 +104,7 @@
 
             <!-- 취소/반품 내역 -->
             <Button
+                android:id="@+id/btnCancelReturnHistory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text=" 취소/반품 내역"
@@ -114,22 +116,12 @@
 
             <!-- 배송지관리 -->
             <Button
+                android:id="@+id/btnDeliveryManagement"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text=" 배송지관리"
                 style="?android:borderlessButtonStyle"
                 android:drawableLeft="@drawable/my_page_delivery"
-                android:drawableRight="@drawable/icon_my_page_next"
-                android:gravity="left|center_vertical"
-                android:paddingStart="16dp"/>
-
-            <!-- 정기배송 관리 -->
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=" 정기배송 관리"
-                style="?android:borderlessButtonStyle"
-                android:drawableLeft="@drawable/icon_my_page_regular_delivery"
                 android:drawableRight="@drawable/icon_my_page_next"
                 android:gravity="left|center_vertical"
                 android:paddingStart="16dp"/>
@@ -145,8 +137,9 @@
                 android:textStyle="bold"
                 android:layout_marginTop="16dp"/>
 
-            <!-- 포인트, 쿠폰, 찜한 상품, 상품 후기, 최근 본 상품 -->
+            <!-- 포인트 -->
             <Button
+                android:id="@+id/btnPoint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text=" 포인트"
@@ -156,17 +149,9 @@
                 android:gravity="left|center_vertical"
                 android:paddingStart="16dp"/>
 
+            <!-- 찜한 상품 -->
             <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=" 쿠폰"
-                style="?android:borderlessButtonStyle"
-                android:drawableLeft="@drawable/icon_my_page_ticket"
-                android:drawableRight="@drawable/icon_my_page_next"
-                android:gravity="left|center_vertical"
-                android:paddingStart="16dp"/>
-
-            <Button
+                android:id="@+id/btnFavoriteProducts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text=" 찜한 상품"
@@ -176,7 +161,9 @@
                 android:gravity="left|center_vertical"
                 android:paddingStart="16dp"/>
 
+            <!-- 상품 후기 -->
             <Button
+                android:id="@+id/btnProductReviews"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text=" 상품 후기"
@@ -186,7 +173,9 @@
                 android:gravity="left|center_vertical"
                 android:paddingStart="16dp"/>
 
+            <!-- 최근 본 상품 -->
             <Button
+                android:id="@+id/btnRecentProducts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text=" 최근 본 상품"
@@ -209,6 +198,7 @@
 
             <!-- 나의 문의 -->
             <Button
+                android:id="@+id/btnMyInquiries"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text=" 나의 문의"

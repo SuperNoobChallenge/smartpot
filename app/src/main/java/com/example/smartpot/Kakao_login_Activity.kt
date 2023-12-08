@@ -2,6 +2,7 @@ package com.example.smartpot
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -22,6 +23,8 @@ class Kakao_login_Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityKakaoLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         /** HashKey확인 */
         val keyHash = Utility.getKeyHash(this)

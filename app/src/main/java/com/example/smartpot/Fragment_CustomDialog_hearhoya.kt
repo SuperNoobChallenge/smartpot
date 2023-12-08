@@ -28,7 +28,7 @@ class Fragment_CustomDialog_hearhoya : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         // Create and return a custom-styled dialog
         return super.onCreateDialog(savedInstanceState).apply {
-            setStyle(STYLE_NO_FRAME, R.style.RoundedDialog)
+            setStyle(STYLE_NO_FRAME, R.style.TransparentDialog)
         }
     }
 }

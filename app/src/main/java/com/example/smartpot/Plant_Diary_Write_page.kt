@@ -3,6 +3,7 @@ package com.example.smartpot
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -27,6 +28,7 @@ class Plant_Diary_Write_page : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.page_plant_diary_write)
 
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         // Find the views
         imageView = findViewById(R.id.imageView)
         val buttonCamera = findViewById<Button>(R.id.buttonCamera)
