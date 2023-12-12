@@ -10,70 +10,45 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- 상단 공백 -->
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="16dp" />
 
+        <!-- 사용자 정보 영역 -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_my_page_title"
-            android:padding="10dp">
-            <!-- 사용자 정보 영역 -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:paddingTop="30dp">
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="100dp"
+                android:src="@drawable/icon_my_page_profile"/>
+            <TextView
+                android:id="@+id/tvKakaoName"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_gravity="center"
+                android:paddingTop="10dp"
+                android:text="KakaoTalk User"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-                <!-- 왼쪽 공백 -->
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5" />
+            <TextView
+                android:id="@+id/tvKakaoEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="kakao@example.com"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray" />
 
-                <!-- 프로필 이미지 -->
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:id="@+id/ivProfileImage"
-                    android:scaleType="centerCrop"
-                    android:contentDescription="@string/profile_image" />
-
-                <!-- 사용자 정보 -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_weight="2"
-                    android:layout_marginStart="16dp">
-
-                    <TextView
-                        android:id="@+id/tvKakaoName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="KakaoTalk User"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvKakaoEmail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="kakao@example.com"
-                        android:textSize="14sp"
-                        android:textColor="@android:color/darker_gray" />
-
-                </LinearLayout>
-
-                <!-- 오른쪽 공백 -->
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5" />
-            </LinearLayout>
         </LinearLayout>
         <!-- 주문, 쇼핑, 고객센터 영역 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:background="#EAEAEA"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -87,8 +62,7 @@
                 android:text="주문관리"
                 style="@android:style/TextAppearance.DeviceDefault.Large"
                 android:gravity="left|center_vertical"
-                android:textSize="20sp"
-                android:textStyle="bold"/>
+                android:textSize="15sp"/>
 
             <!-- 주문 내역 -->
             <Button
@@ -97,10 +71,9 @@
                 android:layout_height="wrap_content"
                 android:text=" 주문 내역"
                 style="?android:borderlessButtonStyle"
-                android:drawableLeft="@drawable/icon_my_page_list"
                 android:drawableRight="@drawable/icon_my_page_next"
                 android:gravity="left|center_vertical"
-                android:paddingStart="16sp"/>
+                android:paddingStart="19sp"/>
 
             <!-- 취소/반품 내역 -->
             <Button
@@ -109,10 +82,9 @@
                 android:layout_height="wrap_content"
                 android:text=" 취소/반품 내역"
                 style="?android:borderlessButtonStyle"
-                android:drawableLeft="@drawable/icon_my_page_return"
                 android:drawableRight="@drawable/icon_my_page_next"
                 android:gravity="left|center_vertical"
-                android:paddingStart="16dp"/>
+                android:paddingStart="19dp"/>
 
             <!-- 배송지관리 -->
             <Button
@@ -121,11 +93,16 @@
                 android:layout_height="wrap_content"
                 android:text=" 배송지관리"
                 style="?android:borderlessButtonStyle"
-                android:drawableLeft="@drawable/my_page_delivery"
                 android:drawableRight="@drawable/icon_my_page_next"
                 android:gravity="left|center_vertical"
-                android:paddingStart="16dp"/>
+                android:paddingStart="19dp"/>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
+                android:background="#EAEAEA"/>
             <!-- 나의 쇼핑관리 -->
             <TextView
                 android:layout_width="match_parent"
@@ -133,8 +110,7 @@
                 android:text="나의 쇼핑관리"
                 style="@android:style/TextAppearance.DeviceDefault.Large"
                 android:gravity="left|center_vertical"
-                android:textSize="20sp"
-                android:textStyle="bold"
+                android:textSize="15sp"
                 android:layout_marginTop="16dp"/>
 
             <!-- 포인트 -->
@@ -144,10 +120,9 @@
                 android:layout_height="wrap_content"
                 android:text=" 포인트"
                 style="?android:borderlessButtonStyle"
-                android:drawableLeft="@drawable/icon_my_page_point"
                 android:drawableRight="@drawable/icon_my_page_next"
                 android:gravity="left|center_vertical"
-                android:paddingStart="16dp"/>
+                android:paddingStart="19dp"/>
 
             <!-- 찜한 상품 -->
             <Button
@@ -156,10 +131,9 @@
                 android:layout_height="wrap_content"
                 android:text=" 찜한 상품"
                 style="?android:borderlessButtonStyle"
-                android:drawableLeft="@drawable/icon_my_page_heart"
                 android:drawableRight="@drawable/icon_my_page_next"
                 android:gravity="left|center_vertical"
-                android:paddingStart="16dp"/>
+                android:paddingStart="19dp"/>
 
             <!-- 상품 후기 -->
             <Button
@@ -168,23 +142,16 @@
                 android:layout_height="wrap_content"
                 android:text=" 상품 후기"
                 style="?android:borderlessButtonStyle"
-                android:drawableLeft="@drawable/icon_my_page_review"
                 android:drawableRight="@drawable/icon_my_page_next"
                 android:gravity="left|center_vertical"
-                android:paddingStart="16dp"/>
+                android:paddingStart="19dp"/>
 
-            <!-- 최근 본 상품 -->
-            <Button
-                android:id="@+id/btnRecentProducts"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=" 최근 본 상품"
-                style="?android:borderlessButtonStyle"
-                android:drawableLeft="@drawable/icon_my_page_clock"
-                android:drawableRight="@drawable/icon_my_page_next"
-                android:gravity="left|center_vertical"
-                android:paddingStart="16dp"/>
-
+                android:layout_height="1dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
+                android:background="#EAEAEA"/>
             <!-- 고객센터 -->
             <TextView
                 android:layout_width="match_parent"
@@ -192,8 +159,7 @@
                 android:text="고객센터"
                 style="@android:style/TextAppearance.DeviceDefault.Large"
                 android:gravity="left|center_vertical"
-                android:textSize="20sp"
-                android:textStyle="bold"
+                android:textSize="15sp"
                 android:layout_marginTop="16dp" />
 
             <!-- 나의 문의 -->
@@ -201,12 +167,11 @@
                 android:id="@+id/btnMyInquiries"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=" 나의 문의"
+                android:text=" 나의 후기"
                 style="?android:borderlessButtonStyle"
-                android:drawableLeft="@drawable/icon_my_page_question"
                 android:drawableRight="@drawable/icon_my_page_next"
                 android:gravity="left|center_vertical"
-                android:paddingStart="16dp"/>
+                android:paddingStart="19dp"/>
         </LinearLayout>
 
         <!-- 로그아웃 버튼 -->
@@ -215,18 +180,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="로그아웃"
+            android:textColor="#54B22D"
             android:background="@android:color/transparent"
             android:layout_marginTop="16dp"
             android:backgroundTint="@color/colorAccent" />
 
-        <!-- 회원 탈퇴 버튼 -->
-        <Button
-            android:id="@+id/btnKakaoWithdraw"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="회원 탈퇴"
-            android:background="@android:color/transparent"
-            android:layout_marginTop="16dp"
-            android:backgroundTint="@color/colorAccent" />
     </LinearLayout>
 </ScrollView>

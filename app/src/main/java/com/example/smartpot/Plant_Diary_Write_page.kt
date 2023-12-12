@@ -86,8 +86,6 @@ class Plant_Diary_Write_page : AppCompatActivity() {
     }
 
     private fun openCamera() {
-        // Here, you can launch the camera activity or use CameraX to capture a photo.
-        // For simplicity, we'll use the MediaStore ACTION_IMAGE_CAPTURE intent.
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (takePictureIntent.resolveActivity(packageManager) != null) {
             startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE)
@@ -114,7 +112,6 @@ class Plant_Diary_Write_page : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
-            // Get the captured image and set it to the ImageView
             val imageBitmap = data?.extras?.get("data") as Bitmap
             imageView.setImageBitmap(imageBitmap)
         }

@@ -31,7 +31,7 @@ class Fragment_My_page : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val btnLogout = view.findViewById<Button>(R.id.btnKakaoLogout)
-        val btnWithdraw = view.findViewById<Button>(R.id.btnKakaoWithdraw)
+//        val btnWithdraw = view.findViewById<Button>(R.id.btnKakaoWithdraw)
 
         btnLogout.setOnClickListener {
             UserApiClient.instance.logout { error ->
@@ -49,7 +49,6 @@ class Fragment_My_page : Fragment() {
         val btnPoint = view.findViewById<Button>(R.id.btnPoint)
         val btnFavoriteProducts = view.findViewById<Button>(R.id.btnFavoriteProducts)
         val btnProductReviews = view.findViewById<Button>(R.id.btnProductReviews)
-        val btnRecentProducts = view.findViewById<Button>(R.id.btnRecentProducts)
         val btnMyInquiries = view.findViewById<Button>(R.id.btnMyInquiries)
 
         btnOrderHistory.setOnClickListener {
@@ -88,20 +87,14 @@ class Fragment_My_page : Fragment() {
             startActivity(intent)
         }
 
-        btnRecentProducts.setOnClickListener {
-            // Handle click for Recent Products button
-            val intent = Intent(activity, Fragment_check::class.java)
-            startActivity(intent)
-        }
-
         btnMyInquiries.setOnClickListener {
             // Handle click for My Inquiries button
             val intent = Intent(activity, Fragment_check::class.java)
             startActivity(intent)
         }
-        btnWithdraw.setOnClickListener {
-            showWithdrawalConfirmationDialog()
-        }
+//        btnWithdraw.setOnClickListener {
+//            showWithdrawalConfirmationDialog()
+//        }
         loadUserInfo()
     }
     private fun showWithdrawalConfirmationDialog() {
@@ -135,7 +128,6 @@ class Fragment_My_page : Fragment() {
         }
     }
     private fun loadUserInfo() {
-        val ivProfileImage = view?.findViewById<ImageView>(R.id.ivProfileImage)
         // Get user information
         UserApiClient.instance.me { user: User?, error ->
             if (error != null) {
@@ -144,14 +136,14 @@ class Fragment_My_page : Fragment() {
 
                 // Load and display the profile image
                 user.kakaoAccount?.profile?.thumbnailImageUrl?.let { imageUrl ->
-                    if (ivProfileImage != null) {
+
                         Glide.with(this@Fragment_My_page)
                             .load(imageUrl)
                             .placeholder(R.drawable.background_my_page_circle)
                             .error(R.drawable.background_my_page_circle)
                             .fitCenter()
-                            .into(ivProfileImage)
-                    }
+
+
                 }
             }
         }
