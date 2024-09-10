@@ -1,4 +1,4 @@
-package com.example.smartpot
+package com.example.smartpot.Main
 
 import android.app.AlertDialog
 import android.content.Context
@@ -17,6 +17,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.example.smartpot.Fragment_Blank2
+import com.example.smartpot.Main.Dictionary.Fragment_CustomDialog_hearhoya
+import com.example.smartpot.Main.Dictionary.Fragment_main_Cactus
+import com.example.smartpot.Main.Dictionary.Fragment_main_Fishbone
+import com.example.smartpot.Main.Dictionary.Fragment_main_Haunted_house
+import com.example.smartpot.Main.Dictionary.Fragment_main_Hearthoya
+import com.example.smartpot.Main.Dictionary.Fragment_main_Stucky
+import com.example.smartpot.R
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
@@ -25,12 +33,10 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
-import com.github.mikephil.charting.utils.MPPointF
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import kotlin.math.abs
 
 
 class Fragment_Main_page: Fragment() {

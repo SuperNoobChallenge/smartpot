@@ -1,8 +1,12 @@
-package com.example.smartpot
+package com.example.smartpot.Main
 
 import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.smartpot.Mypage.Fragment_My_page
+import com.example.smartpot.Diary.Fragment_Plant_Diary_page
+import com.example.smartpot.Store.Fragment_Store_page
+import com.example.smartpot.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 

@@ -1,4 +1,4 @@
-package com.example.smartpot
+package com.example.smartpot.Diary
 
 import android.Manifest
 import android.content.Context
@@ -19,6 +19,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.smartpot.R
 import com.google.android.material.textfield.TextInputLayout
 
 class Plant_Diary_Write_page : AppCompatActivity() {

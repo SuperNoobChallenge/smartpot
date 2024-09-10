@@ -1,4 +1,4 @@
-package com.example.smartpot
+package com.example.smartpot.Main.Dictionary
 
 import android.app.Dialog
 import android.os.Bundle
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.DialogFragment
+import com.example.smartpot.R
 
 class Fragment_CustomDialog_hearhoya : DialogFragment() {
 

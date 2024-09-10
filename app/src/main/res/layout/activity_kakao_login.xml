@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/login"
-    tools:context=".Kakao_login_Activity">
+    tools:context=".login.Kakao_login_Activity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -1,4 +1,4 @@
-package com.example.smartpot
+package com.example.smartpot.Diary
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import com.example.smartpot.R
 
 class Fragment_Plant_Diary_page : Fragment() {
 
