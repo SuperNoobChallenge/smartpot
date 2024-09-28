@@ -22,6 +22,7 @@ class Kakao_login_Activity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         _binding = ActivityKakaoLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
