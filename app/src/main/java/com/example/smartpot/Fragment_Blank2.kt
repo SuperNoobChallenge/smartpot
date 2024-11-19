@@ -22,7 +22,7 @@ class Fragment_Blank2: Fragment() {
     }
 
     companion object {
-        private const val ARG_PAGE_NUMBER = "page_number"
+        const val ARG_PAGE_NUMBER = "page_number"
 
         fun newInstance(pageNumber: Int): Fragment_Blank2 {
             val fragment = Fragment_Blank2()

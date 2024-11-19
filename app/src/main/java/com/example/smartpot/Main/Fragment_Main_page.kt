@@ -2,6 +2,7 @@ package com.example.smartpot.Main
 
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
@@ -25,6 +26,8 @@ import com.example.smartpot.Main.Dictionary.Fragment_main_Haunted_house
 import com.example.smartpot.Main.Dictionary.Fragment_main_Hearthoya
 import com.example.smartpot.Main.Dictionary.Fragment_main_Stucky
 import com.example.smartpot.R
+import com.example.smartpot.hardtest
+import com.example.smartpot.login.Kakao_login_Activity
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
@@ -134,7 +137,7 @@ class Fragment_Main_page: Fragment() {
         return view
     }
     private fun showAddButtonDialog() {
-        val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
+        val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥", "기기추가테스트")
 
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("식물을 선택해주세요")
@@ -147,6 +150,11 @@ class Fragment_Main_page: Fragment() {
                 2 -> addNewPage_Cactus()
                 3 -> addNewPage_Fishbone()
                 4 -> addNewPage_Haunted_house()
+                5 -> {
+                    // Intent로 hardtest 액티비티로 이동
+                    val intent = Intent(requireContext(), hardtest::class.java)
+                    startActivity(intent)
+                }
             }
         }
 

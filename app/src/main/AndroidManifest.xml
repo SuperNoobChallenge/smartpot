@@ -17,11 +17,6 @@
         <activity android:name=".login.Kakao_login_Activity"
             android:screenOrientation="portrait"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:screenOrientation="portrait"
@@ -37,7 +32,12 @@
 
         </activity>
         <activity android:name=".Main.MainActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
 
         </activity>
         <activity android:name=".login.Activity_Login_Jion_Membership"
@@ -52,6 +52,9 @@
         <activity android:name=".Fragment_check"
             android:screenOrientation="portrait">
             <!-- 다른 설정들 -->
+        </activity>
+        <activity android:name=".hardtest">
+
         </activity>
     </application>
 </manifest>
