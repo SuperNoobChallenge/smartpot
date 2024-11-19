@@ -233,7 +233,9 @@ class hardtest : AppCompatActivity() {
                             }
                             isScanningWifi -> {
                                 // WiFi 네트워크 추가
-                                wifiNetworks.add(trimmedLine)
+                                if(trimmedLine != ""){
+                                    wifiNetworks.add(trimmedLine)
+                                }
                             }
                             trimmedLine == "WIFI_CONNECT_SUCCESS" -> {
                                 Toast.makeText(this, "Wi-Fi 연결 성공!", Toast.LENGTH_SHORT).show()
