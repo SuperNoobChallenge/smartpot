@@ -4,6 +4,8 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    // Add the Google services Gradle plugin
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -74,4 +76,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.12.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
     implementation("com.navercorp.nid:oauth:5.3.0")
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+
 }
