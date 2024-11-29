@@ -130,6 +130,10 @@ class Fragment_Main_page: Fragment() {
         chart.invalidate()
         initChart()
 
+        // 데이터 불러오기 테스트를 위한 임시 화분 설정
+        addNewPage_Hearthoya()
+        addNewPage_Stucky()
+
         val viewPagerPadding = resources.getDimensionPixelSize(R.dimen.view_pager_padding)
         val screen = requireActivity().windowManager.defaultDisplay.width
         val startOffset = viewPagerPadding.toFloat() / (screen - 2 * viewPagerPadding)
@@ -366,7 +370,7 @@ class Fragment_Main_page: Fragment() {
         entries.add(Entry(4.toFloat(), 59.toFloat()))
         entries.add(Entry(5.toFloat(), 49.toFloat()))
         entries.add(Entry(6.toFloat(), 47.toFloat()))
-        entries.add(Entry(7.toFloat(), 40.toFloat()))
+        entries.add(Entry(7.toFloat(), 89.toFloat()))
 
         val icons = mutableListOf<Int>()
 

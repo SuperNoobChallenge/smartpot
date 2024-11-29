@@ -39,12 +39,12 @@ class hardtest : AppCompatActivity() {
 
         setContentView(R.layout.hardtest)
 
-        // BuildConfig에서 값 가져오기
-        val apiKey = BuildConfig.API_KEY
-        val databaseUrl = BuildConfig.DATABASE_URL
-
-        Log.d("Config", "API Key: $apiKey")
-        Log.d("Config", "Database URL: $databaseUrl")
+//        // BuildConfig에서 값 가져오기
+//        val apiKey = BuildConfig.API_KEY
+//        val databaseUrl = BuildConfig.DATABASE_URL
+//
+//        Log.d("Config", "API Key: $apiKey")
+//        Log.d("Config", "Database URL: $databaseUrl")
 
         // UI 컴포넌트 초기화
         btn_bltPairing = findViewById(R.id.btn_bltPairing)
