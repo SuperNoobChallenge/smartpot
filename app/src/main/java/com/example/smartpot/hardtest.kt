@@ -17,7 +17,6 @@ import java.io.OutputStream
 import java.util.*
 
 class hardtest : AppCompatActivity() {
-
     private val TAG = "BluetoothChat"
     private val DEVICE_NAME = "ESP32_BT" // ESP32에서 설정한 이름과 동일해야 합니다.
     private val UUID_INSECURE = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
@@ -39,6 +38,13 @@ class hardtest : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.hardtest)
+
+        // BuildConfig에서 값 가져오기
+        val apiKey = BuildConfig.API_KEY
+        val databaseUrl = BuildConfig.DATABASE_URL
+
+        Log.d("Config", "API Key: $apiKey")
+        Log.d("Config", "Database URL: $databaseUrl")
 
         // UI 컴포넌트 초기화
         btn_bltPairing = findViewById(R.id.btn_bltPairing)

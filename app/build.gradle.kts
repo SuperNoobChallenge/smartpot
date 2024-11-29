@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -15,6 +18,21 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // local.properties 파일 로드
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localProperties.load(FileInputStream(localPropertiesFile))
+        }
+
+        // API_KEY와 DATABASE_URL 가져오기
+        val apiKey = localProperties.getProperty("API_KEY") ?: ""
+        val databaseUrl = localProperties.getProperty("DATABASE_URL") ?: ""
+
+        // BuildConfig에 추가
+        buildConfigField("String", "API_KEY", "\"$apiKey\"")
+        buildConfigField("String", "DATABASE_URL", "\"$databaseUrl\"")
     }
 
     buildTypes {
@@ -26,15 +44,18 @@ android {
             )
         }
     }
+
+    buildFeatures {
+        buildConfig = true  // buildConfig 기능 활성화
+        viewBinding = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = "1.8"
-    }
-    buildFeatures {
-        viewBinding = true
     }
 }
 
@@ -45,7 +66,6 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.android.identity:identity-credential-android:20231002")
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("androidx.databinding:viewbinding:8.2.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
