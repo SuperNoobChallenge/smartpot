@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -107,8 +108,13 @@ class Fragment_Main_page: Fragment() {
         val lastPageIndex = sharedPreferences.getInt("lastPageIndex", 0)
         viewPager.setCurrentItem(lastPageIndex, false)
 
+        // 프레그먼트 관련 함수
+        // 프레그먼트 포지션(몇 번인지 확인 하 수 있음)
+        // 프레그먼트가 변화할 때 마다 호출 ex 이동, 생성
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
+                // 포지션은 0부터 시작해 +1
+                // 식물 추가 창도 포지션을 차지하기 때문에 주의가 필요함
                 updateIndicators(position)
                 if (position == fragments.size - 1) {
                     addButton.visibility = View.VISIBLE
