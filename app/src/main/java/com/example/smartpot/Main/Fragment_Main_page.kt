@@ -1,5 +1,5 @@
 package com.example.smartpot.Main
-
+import kotlin.math.roundToInt
 import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.content.Context
@@ -56,6 +56,10 @@ class Fragment_Main_page: Fragment() {
     private lateinit var addText: TextView
     private lateinit var addImage: ImageView
     private lateinit var indicatorLayout: LinearLayout
+    private lateinit var  yesterdayMoisture: TextView
+    private lateinit var  yesterdayTemperature: TextView
+    private lateinit var  currentMoisture: TextView
+    private lateinit var  currentTemperature: TextView
     private lateinit var chart: LineChart
     private val fragments = ArrayList<Fragment>()
     private lateinit var db: FirebaseFirestore
@@ -122,6 +126,10 @@ class Fragment_Main_page: Fragment() {
         addText = view.findViewById(R.id.addText)
         addImage = view.findViewById(R.id.addImage)
         indicatorLayout = view.findViewById(R.id.indicatorLayout)
+        yesterdayMoisture = view.findViewById(R.id.yesterday_moisture)
+        yesterdayTemperature = view.findViewById(R.id.yesterday_temperature)
+        currentMoisture = view.findViewById(R.id.current_moisture)
+        currentTemperature = view.findViewById(R.id.current_temperature)
         chart = view.findViewById(R.id.plant_water_chart)
         val pagerAdapter = ScreenSlidePagerAdapter(requireActivity())
         viewPager.adapter = pagerAdapter
@@ -142,10 +150,10 @@ class Fragment_Main_page: Fragment() {
         viewPager.setCurrentItem(lastPageIndex, false)
 
 
-// devicesCurrentData 초기화
+        // devicesCurrentData 초기화
         var devicesCurrentData: ArrayList<NowData> = ArrayList()
 
-// 코루틴을 사용하여 fetchUserData 호출
+        // 코루틴을 사용하여 fetchUserData 호출
         lifecycleScope.launch {
             val userData = fetchUserData(username)
             if (userData != null) {
@@ -165,6 +173,15 @@ class Fragment_Main_page: Fragment() {
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
 //                fetchNowData()
+                if(devicesCurrentData.size > position){
+                    var currentD = devicesCurrentData.get(position)
+                    yesterdayTemperature.text = currentD.temperature?.roundToInt().toString() + " ℃"
+                    currentTemperature.text = currentD.temperature?.roundToInt().toString() + " ℃"
+                    yesterdayMoisture.text = currentD.humidity?.roundToInt().toString() + " %"
+                    currentMoisture.text = currentD.humidity?.roundToInt().toString() + " %"
+                }
+
+
                 // 포지션은 0부터 시작해 +1
                 // 식물 추가 창도 포지션을 차지하기 때문에 주의가 필요함
                 updateIndicators(position)
