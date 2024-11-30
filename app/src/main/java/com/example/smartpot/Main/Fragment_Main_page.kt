@@ -1,6 +1,7 @@
 package com.example.smartpot.Main
 
 import android.app.AlertDialog
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -17,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.smartpot.Fragment_Blank2
@@ -37,6 +39,10 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -52,6 +58,30 @@ class Fragment_Main_page: Fragment() {
     private lateinit var indicatorLayout: LinearLayout
     private lateinit var chart: LineChart
     private val fragments = ArrayList<Fragment>()
+    private lateinit var db: FirebaseFirestore
+
+    var userDevices: ArrayList<String> = arrayListOf() // 유저 화분 번호 저장
+    var username: String = "user1" // 유저 이름 임시저장
+
+    // 파이어베이스 nowdata 저장용 클레스
+    data class NowData(
+        val batteryPercentage: Double? = null,
+        val batteryPercentageRound: Int? = null,
+        val batteryVoltage: Double? = null,
+        val currentTime: String? = null,
+        val heatIndex: Double? = null,
+        val humidity: Double? = null,
+        val name: String? = null,
+        val soilMoistureADC: Int? = null,
+        val soilStatus: String? = null,
+        val soilVoltage: Double? = null,
+        val temperature: Double? = null,
+        val timestamp: Long? = null
+    )
+
+    data class UserData(
+        val devices: List<String>? = null
+    )
 
     // 페이지 이동에 따라 크기가 줄어들고 왼쪽으로 이동하는 효과를 주는 PageTransformer 클래스
     class CardsPagerTransformerShift(
@@ -105,14 +135,36 @@ class Fragment_Main_page: Fragment() {
 
         sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
+        // Firestore 인스턴스 초기화
+        db = FirebaseFirestore.getInstance()
+
         val lastPageIndex = sharedPreferences.getInt("lastPageIndex", 0)
         viewPager.setCurrentItem(lastPageIndex, false)
+
+
+// devicesCurrentData 초기화
+        var devicesCurrentData: ArrayList<NowData> = ArrayList()
+
+// 코루틴을 사용하여 fetchUserData 호출
+        lifecycleScope.launch {
+            val userData = fetchUserData(username)
+            if (userData != null) {
+                for (deviceId in userData.devices ?: listOf()) {
+                    val nowData = fetchNowData(deviceId)
+                    if(nowData != null){
+                        devicesCurrentData.add(nowData)
+                        addNewPage_Hearthoya() // 데이터가 성공적으로 추가된 이후에 페이지를 추가
+                    }
+                }
+            }
+        }
 
         // 프레그먼트 관련 함수
         // 프레그먼트 포지션(몇 번인지 확인 하 수 있음)
         // 프레그먼트가 변화할 때 마다 호출 ex 이동, 생성
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
+//                fetchNowData()
                 // 포지션은 0부터 시작해 +1
                 // 식물 추가 창도 포지션을 차지하기 때문에 주의가 필요함
                 updateIndicators(position)
@@ -136,16 +188,63 @@ class Fragment_Main_page: Fragment() {
         chart.invalidate()
         initChart()
 
-        // 데이터 불러오기 테스트를 위한 임시 화분 설정
-        addNewPage_Hearthoya()
-        addNewPage_Stucky()
-
         val viewPagerPadding = resources.getDimensionPixelSize(R.dimen.view_pager_padding)
         val screen = requireActivity().windowManager.defaultDisplay.width
         val startOffset = viewPagerPadding.toFloat() / (screen - 2 * viewPagerPadding)
         viewPager.setPageTransformer(CardsPagerTransformerShift(0, 50, 0.75f, startOffset))
         return view
     }
+
+    // 파이어베이스에서 유저 값 받아오는
+    suspend fun fetchUserData(username: String):UserData? {
+        val docRef = db.collection("users")
+            .document(username)
+
+        try {
+            val documentSnapshot = docRef.get().await()
+            if (documentSnapshot != null && documentSnapshot.exists()) {
+                val userData = documentSnapshot.toObject(UserData::class.java)
+                if (userData != null) {
+                    userDevices.clear()
+                    userDevices.addAll(userData.devices ?: emptyList())
+                    return userData
+                } else {
+                    Log.d(TAG, "User data is null")
+                }
+            } else {
+                Log.d(TAG, "No such document")
+            }
+        } catch (exception: Exception) {
+            Log.d(TAG, "get failed with ", exception)
+        }
+        // 실패한 경우 null 반환
+        return null
+    }
+
+    // 파이어베이스에서 현재 값을 가져오는 함수
+    suspend fun fetchNowData(deviceId: String): NowData? {
+        val docRef = db.collection("testCollection")
+            .document("data")
+            .collection(deviceId)
+            .document("nowdata")
+
+        try {
+            val documentSnapshot = docRef.get().await()
+            if (documentSnapshot != null && documentSnapshot.exists()) {
+                val nowData = documentSnapshot.toObject(NowData::class.java)
+                if (nowData != null) {
+                    return nowData
+                }
+            } else {
+                Log.d(TAG, "No such document for device: $deviceId")
+            }
+        } catch (exception: Exception) {
+            Log.d(TAG, "get failed with ", exception)
+        }
+        // 실패한 경우 null 반환
+        return null
+    }
+
     private fun showAddButtonDialog() {
         val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥", "기기추가테스트")
 
@@ -188,7 +287,6 @@ class Fragment_Main_page: Fragment() {
         yAxisLeft.axisMinimum = 0f
         yAxisLeft.axisMaximum = 100f
     }
-
     private fun updateIndicators(currentPosition: Int) {
         val existingIndicatorCount = indicatorLayout.childCount
 
@@ -216,9 +314,6 @@ class Fragment_Main_page: Fragment() {
             )
         }
     }
-
-
-
     fun addNewPage_Hearthoya() {
         if (fragments.lastOrNull() is Fragment_Blank2) {
             fragments.removeAt(fragments.size - 1)
@@ -269,7 +364,6 @@ class Fragment_Main_page: Fragment() {
         addNewPage2()
         updateButtonInCurrentFragment()
     }
-
     fun addNewPage2() {
         val currentPosition = viewPager.currentItem
 
@@ -322,7 +416,6 @@ class Fragment_Main_page: Fragment() {
         setChartData()
         chart.invalidate()
     }
-
     private fun initializeButtonInCurrentFragment() {
         val currentIndex = viewPager.currentItem
 
