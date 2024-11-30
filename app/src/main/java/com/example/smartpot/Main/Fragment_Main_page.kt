@@ -198,20 +198,6 @@ class Fragment_Main_page: Fragment() {
             }
         }
 
-//        // 코루틴을 사용하여 fetchUserData 호출
-//        lifecycleScope.launch {
-//            val userData = fetchUserData(username)
-//            if (userData != null) {
-//                for (deviceId in userData.devices ?: listOf()) {
-//                    val nowData = fetchNowData(deviceId)
-//                    if(nowData != null){
-//                        devicesCurrentData.add(nowData)
-//                        addNewPage_Hearthoya() // 데이터가 성공적으로 추가된 이후에 페이지를 추가
-//                    }
-//                }
-//            }
-//        }
-
         // 프레그먼트 관련 함수
         // 프레그먼트 포지션(몇 번인지 확인 하 수 있음)
         // 프레그먼트가 변화할 때 마다 호출 ex 이동, 생성
