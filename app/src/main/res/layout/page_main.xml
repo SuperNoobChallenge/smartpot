@@ -183,7 +183,7 @@
                                 android:layout_height="match_parent"
                                 android:gravity="bottom"
                                 android:paddingLeft="3dp"
-                                android:text="12:00 기준"
+                                android:text="하루 평균"
                                 android:textColor="@color/black"
                                 android:textSize="7sp"/>
                         </LinearLayout>
@@ -356,7 +356,7 @@
                             android:paddingTop="20dp"
                             android:paddingBottom="5dp"
                             android:paddingLeft="5dp"
-                            android:text="12:00기준"
+                            android:text="하루 평균"
                             android:textSize="7sp"
                             android:textColor="@color/black"/>
                         <LinearLayout
