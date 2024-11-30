@@ -67,7 +67,7 @@ class Fragment_Main_page: Fragment() {
     private lateinit var db: FirebaseFirestore
 
     var userDevices: ArrayList<String> = arrayListOf() // 유저 화분 번호 저장
-    var username: String = "user1" // 유저 이름 임시저장
+    var username: String = "user2" // 유저 이름 임시저장
 
     // 파이어베이스 nowdata 저장용 클레스
     data class NowData(
@@ -167,6 +167,7 @@ class Fragment_Main_page: Fragment() {
         DataHolder.historicalDataMap.clear()
         DataHolder.userDevices.clear()
 
+        var currentPosition : Int = 0
         val lastPageIndex = sharedPreferences.getInt("lastPageIndex", 0)
         viewPager.setCurrentItem(lastPageIndex, false)
 
@@ -193,6 +194,10 @@ class Fragment_Main_page: Fragment() {
                         withContext(Dispatchers.Main) {
                             addNewPage(nowData.name ?: "하트호야") // 기기 종류에 따라 페이지 추가
                         }
+
+                        // 데이터 리스너 설정
+                        setNowDataListener(deviceId, currentPosition)
+                        setHistoricalDataListener(deviceId, currentPosition)
                     }
                 }
             }
@@ -201,24 +206,46 @@ class Fragment_Main_page: Fragment() {
         // 프레그먼트 관련 함수
         // 프레그먼트 포지션(몇 번인지 확인 하 수 있음)
         // 프레그먼트가 변화할 때 마다 호출 ex 이동, 생성
+        // 프레그먼트 관련 함수
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                if(DataHolder.devicesCurrentData.size > position){
+                currentPosition = position
+                if (DataHolder.devicesCurrentData.size > position) {
                     val currentD = DataHolder.devicesCurrentData[position]
-                    yesterdayTemperature.text = currentD.temperature?.roundToInt().toString() + " ℃"
                     currentTemperature.text = currentD.temperature?.roundToInt().toString() + " ℃"
-                    yesterdayMoisture.text = currentD.humidity?.roundToInt().toString() + " %"
                     currentMoisture.text = currentD.humidity?.roundToInt().toString() + " %"
 
-                    val deviceId = userDevices[position]
+                    val deviceId = DataHolder.userDevices[currentPosition]
+                    val historicalDataList = DataHolder.historicalDataMap[deviceId]
 
-                    // 저장된 히스토리컬 데이터를 가져옵니다.
-                    val historicalDataList = DataHolder.historicalDataMap[deviceId] ?: emptyList()
+                    if (historicalDataList != null) {
+                        // 어제 날짜 문자열 생성
+                        val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+                        val calendar = Calendar.getInstance()
+                        calendar.add(Calendar.DAY_OF_YEAR, -1)
+                        val yesterdayDateString = dateFormat.format(calendar.time)
+
+                        // 어제 데이터 찾기
+                        val yesterdayData = historicalDataList.find { it.date == yesterdayDateString }
+
+                        if (yesterdayData != null) {
+                            // 어제 데이터로 UI 업데이트
+                            yesterdayTemperature.text = yesterdayData.avgTemperature?.roundToInt().toString() + " ℃"
+                            yesterdayMoisture.text = yesterdayData.avgHumidity?.roundToInt().toString() + " %"
+                        } else {
+                            // 어제 데이터가 없을 경우 기본값 설정
+                            yesterdayTemperature.text = "00 ℃"
+                            yesterdayMoisture.text = "00 %"
+                        }
+                    } else {
+                        // 히스토리 데이터가 없을 경우 기본값 설정
+                        yesterdayTemperature.text = "00 ℃"
+                        yesterdayMoisture.text = "00 %"
+                    }
 
                     // 차트 데이터 업데이트
-                    setChartData(historicalDataList)
+                    setChartData(historicalDataList ?: emptyList())
                 }
-
 
                 // 포지션은 0부터 시작해 +1
                 // 식물 추가 창도 포지션을 차지하기 때문에 주의가 필요함
@@ -237,6 +264,7 @@ class Fragment_Main_page: Fragment() {
                 updateButtonInCurrentFragment()
             }
         })
+
 
         addLimitLine()
         setChartData()
@@ -351,6 +379,93 @@ class Fragment_Main_page: Fragment() {
         // 실패한 경우 null 반환
         return null
     }
+
+    // 파이어베이스 nowdata 문서에 대한 리스너 설정 함수
+    fun setNowDataListener(deviceId: String, deviceIndex: Int) {
+        val docRef = db.collection("testCollection")
+            .document("data")
+            .collection(deviceId)
+            .document("nowdata")
+
+        docRef.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e)
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                val nowData = snapshot.toObject(NowData::class.java)
+                if (nowData != null) {
+                    // DataHolder 업데이트
+                    DataHolder.devicesCurrentData[deviceIndex] = nowData
+
+                    // 현재 페이지가 해당 기기일 경우 UI 업데이트
+                    if (viewPager.currentItem == deviceIndex) {
+                        updateCurrentDeviceUI(nowData)
+                    }
+                }
+            } else {
+                Log.d(TAG, "Current data: null")
+            }
+        }
+    }
+
+    // 파이어베이스 오늘 날짜 히스토리컬 데이터에 대한 리스너 설정 함수
+    fun setHistoricalDataListener(deviceId: String, deviceIndex: Int) {
+        val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+        val todayDateString = dateFormat.format(Date())
+
+        val docRef = db.collection("testCollection")
+            .document("data")
+            .collection(deviceId)
+            .document(todayDateString)
+
+        docRef.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e)
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                val avgHumidity = snapshot.getDouble("avgHumidity")
+                val avgMoistureADC = snapshot.getDouble("avgMoistureADC")
+                val avgTemperature = snapshot.getDouble("avgTemperature")
+
+                val historicalData = HistoricalData(
+                    date = todayDateString,
+                    avgHumidity = avgHumidity,
+                    avgMoistureADC = avgMoistureADC,
+                    avgTemperature = avgTemperature
+                )
+
+                // DataHolder 업데이트
+                val historicalDataList = DataHolder.historicalDataMap[deviceId]?.toMutableList() ?: mutableListOf()
+                val index = historicalDataList.indexOfFirst { it.date == todayDateString }
+                if (index != -1) {
+                    historicalDataList[index] = historicalData
+                } else {
+                    historicalDataList.add(historicalData)
+                }
+                DataHolder.historicalDataMap[deviceId] = historicalDataList
+
+                // 현재 페이지가 해당 기기일 경우 차트 업데이트
+                if (viewPager.currentItem == deviceIndex) {
+                    setChartData(historicalDataList)
+                }
+            } else {
+                Log.d(TAG, "Current data: null")
+            }
+        }
+    }
+
+    // UI 업데이트를 위한 함수
+    fun updateCurrentDeviceUI(nowData: NowData) {
+        yesterdayTemperature.text = nowData.temperature?.roundToInt().toString() + " ℃"
+        currentTemperature.text = nowData.temperature?.roundToInt().toString() + " ℃"
+        yesterdayMoisture.text = nowData.humidity?.roundToInt().toString() + " %"
+        currentMoisture.text = nowData.humidity?.roundToInt().toString() + " %"
+    }
+
 
     fun addNewPage(deviceType: String) {
         if (fragments.lastOrNull() is Fragment_Blank2) {
