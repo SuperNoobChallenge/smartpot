@@ -40,9 +40,11 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -86,6 +88,20 @@ class Fragment_Main_page: Fragment() {
     data class UserData(
         val devices: List<String>? = null
     )
+
+    data class HistoricalData(
+        val date: String,
+        val avgHumidity: Double?,
+        val avgMoistureADC: Double?,
+        val avgTemperature: Double?
+    )
+
+    object DataHolder {
+        var devicesCurrentData: ArrayList<NowData> = ArrayList()
+        var historicalDataMap: MutableMap<String, List<HistoricalData>> = mutableMapOf()
+        var userDevices: ArrayList<String> = arrayListOf()
+    }
+
 
     // 페이지 이동에 따라 크기가 줄어들고 왼쪽으로 이동하는 효과를 주는 PageTransformer 클래스
     class CardsPagerTransformerShift(
@@ -146,6 +162,11 @@ class Fragment_Main_page: Fragment() {
         // Firestore 인스턴스 초기화
         db = FirebaseFirestore.getInstance()
 
+        // 이전 기록을 저장하기 위한 변수 DataHolder 초기화
+        DataHolder.devicesCurrentData.clear()
+        DataHolder.historicalDataMap.clear()
+        DataHolder.userDevices.clear()
+
         val lastPageIndex = sharedPreferences.getInt("lastPageIndex", 0)
         viewPager.setCurrentItem(lastPageIndex, false)
 
@@ -153,32 +174,63 @@ class Fragment_Main_page: Fragment() {
         // devicesCurrentData 초기화
         var devicesCurrentData: ArrayList<NowData> = ArrayList()
 
-        // 코루틴을 사용하여 fetchUserData 호출
+        // 코루틴을 사용하여 데이터 로딩
         lifecycleScope.launch {
             val userData = fetchUserData(username)
             if (userData != null) {
-                for (deviceId in userData.devices ?: listOf()) {
+                DataHolder.userDevices.addAll(userData.devices ?: emptyList())
+
+                for (deviceId in DataHolder.userDevices) {
                     val nowData = fetchNowData(deviceId)
-                    if(nowData != null){
-                        devicesCurrentData.add(nowData)
-                        addNewPage_Hearthoya() // 데이터가 성공적으로 추가된 이후에 페이지를 추가
+                    if (nowData != null) {
+                        DataHolder.devicesCurrentData.add(nowData)
+
+                        // 히스토리컬 데이터 가져오기
+                        val historicalDataList = fetchHistoricalData(deviceId)
+                        DataHolder.historicalDataMap[deviceId] = historicalDataList
+
+                        // UI 업데이트는 메인 스레드에서 수행
+                        withContext(Dispatchers.Main) {
+                            addNewPage(nowData.name ?: "하트호야") // 기기 종류에 따라 페이지 추가
+                        }
                     }
                 }
             }
         }
+
+//        // 코루틴을 사용하여 fetchUserData 호출
+//        lifecycleScope.launch {
+//            val userData = fetchUserData(username)
+//            if (userData != null) {
+//                for (deviceId in userData.devices ?: listOf()) {
+//                    val nowData = fetchNowData(deviceId)
+//                    if(nowData != null){
+//                        devicesCurrentData.add(nowData)
+//                        addNewPage_Hearthoya() // 데이터가 성공적으로 추가된 이후에 페이지를 추가
+//                    }
+//                }
+//            }
+//        }
 
         // 프레그먼트 관련 함수
         // 프레그먼트 포지션(몇 번인지 확인 하 수 있음)
         // 프레그먼트가 변화할 때 마다 호출 ex 이동, 생성
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-//                fetchNowData()
-                if(devicesCurrentData.size > position){
-                    var currentD = devicesCurrentData.get(position)
+                if(DataHolder.devicesCurrentData.size > position){
+                    val currentD = DataHolder.devicesCurrentData[position]
                     yesterdayTemperature.text = currentD.temperature?.roundToInt().toString() + " ℃"
                     currentTemperature.text = currentD.temperature?.roundToInt().toString() + " ℃"
                     yesterdayMoisture.text = currentD.humidity?.roundToInt().toString() + " %"
                     currentMoisture.text = currentD.humidity?.roundToInt().toString() + " %"
+
+                    val deviceId = userDevices[position]
+
+                    // 저장된 히스토리컬 데이터를 가져옵니다.
+                    val historicalDataList = DataHolder.historicalDataMap[deviceId] ?: emptyList()
+
+                    // 차트 데이터 업데이트
+                    setChartData(historicalDataList)
                 }
 
 
@@ -211,6 +263,58 @@ class Fragment_Main_page: Fragment() {
         viewPager.setPageTransformer(CardsPagerTransformerShift(0, 50, 0.75f, startOffset))
         return view
     }
+
+    // 파이어베이스에서 6일 이전의 데이터 가져오는 함수
+    suspend fun fetchHistoricalData(deviceId: String): List<HistoricalData> {
+        val historicalDataList = mutableListOf<HistoricalData>()
+
+        val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+        val today = Date()
+        val calendar = Calendar.getInstance()
+        calendar.time = today
+
+        // 현재 날짜부터 6일 전까지의 날짜 문자열을 생성합니다.
+        val dateStrings = mutableListOf<String>()
+        for (i in 0..6) {
+            val dateString = dateFormat.format(calendar.time)
+            dateStrings.add(dateString)
+            calendar.add(Calendar.DAY_OF_YEAR, -1)
+        }
+
+        // 컬렉션 레퍼런스를 가져옵니다.
+        val collectionRef = db.collection("testCollection")
+            .document("data")
+            .collection(deviceId)
+
+        // 각 날짜에 대해 문서를 가져옵니다.
+        for (dateString in dateStrings) {
+            val docRef = collectionRef.document(dateString)
+            try {
+                val documentSnapshot = docRef.get().await()
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    val avgHumidity = documentSnapshot.getDouble("avgHumidity")
+                    val avgMoistureADC = documentSnapshot.getDouble("avgMoistureADC")
+                    val avgTemperature = documentSnapshot.getDouble("avgTemperature")
+
+                    val historicalData = HistoricalData(
+                        date = dateString,
+                        avgHumidity = avgHumidity,
+                        avgMoistureADC = avgMoistureADC,
+                        avgTemperature = avgTemperature
+                    )
+                    historicalDataList.add(historicalData)
+                } else {
+                    // 해당 날짜에 문서가 없는 경우 처리
+                    Log.d(TAG, "No data for date: $dateString")
+                }
+            } catch (exception: Exception) {
+                Log.d(TAG, "Failed to fetch data for date $dateString", exception)
+            }
+        }
+
+        return historicalDataList
+    }
+
 
     // 파이어베이스에서 유저 값 받아오는
     suspend fun fetchUserData(username: String):UserData? {
@@ -260,6 +364,27 @@ class Fragment_Main_page: Fragment() {
         }
         // 실패한 경우 null 반환
         return null
+    }
+
+    fun addNewPage(deviceType: String) {
+        if (fragments.lastOrNull() is Fragment_Blank2) {
+            fragments.removeAt(fragments.size - 1)
+            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
+        }
+
+
+        val fragment = when (deviceType) {
+            "하트호야" -> Fragment_main_Hearthoya.newInstance(fragments.size + 1)
+            "스투키" -> Fragment_main_Stucky.newInstance(fragments.size + 1)
+            "선인장" -> Fragment_main_Cactus.newInstance(fragments.size + 1)
+            "피쉬본" -> Fragment_main_Fishbone.newInstance(fragments.size + 1)
+            "괴마옥" -> Fragment_main_Haunted_house.newInstance(fragments.size + 1)
+            else -> Fragment_main_Hearthoya.newInstance(fragments.size + 1)
+        }
+
+        fragments.add(fragment)
+        addNewPage2()
+        updateButtonInCurrentFragment()
     }
 
     private fun showAddButtonDialog() {
@@ -476,17 +601,80 @@ class Fragment_Main_page: Fragment() {
         initializeButtonInCurrentFragment()
     }
 
+    private fun setChartData(historicalDataList: List<HistoricalData>) {
+        val entries = mutableListOf<Entry>()
+        val xLabels = mutableListOf<String>()
+
+        val dateFormat = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+        val displayDateFormat = SimpleDateFormat("MM/dd", Locale.getDefault())
+
+        // 데이터를 날짜순으로 정렬합니다.
+        val sortedData = historicalDataList.sortedBy { it.date }
+
+        for ((index, data) in sortedData.withIndex()) {
+            val xValue = index.toFloat() + 1 // x값은 1부터 시작합니다.
+            val yValue = data.avgMoistureADC?.let {
+                ((4095-it.toFloat()) / 4095.0f) * 100
+            }
+                ?: 0f // avgHumidity를 사용합니다.
+
+            entries.add(Entry(xValue, yValue))
+
+            // x축 레이블을 위한 날짜 포맷팅
+            val date = dateFormat.parse(data.date)
+            val formattedDate = displayDateFormat.format(date)
+            xLabels.add(formattedDate)
+        }
+
+        val dataSet = LineDataSet(entries, null)
+
+        // 데이터셋 속성을 설정합니다.
+        val colorString = "#54B22D"
+        val color = Color.parseColor(colorString)
+        dataSet.color = color
+        dataSet.setDrawIcons(true)
+        dataSet.lineWidth = 1f
+        dataSet.setDrawValues(false)
+
+        // 값에 따라 아이콘을 설정합니다.
+        for (i in entries.indices) {
+            val value = entries[i].y
+            val iconResId = if (value >= 50) {
+                R.drawable.test1
+            } else {
+                R.drawable.test
+            }
+            entries[i].icon = context?.getDrawable(iconResId)
+        }
+
+        val lineData = LineData(dataSet)
+        chart.data = lineData
+
+        // x축 레이블을 설정합니다.
+        val xAxis = chart.xAxis
+        xAxis.granularity = 1f
+        xAxis.valueFormatter = object : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                val index = value.toInt() - 1
+                return if (index >= 0 && index < xLabels.size) xLabels[index] else ""
+            }
+        }
+
+        chart.invalidate()
+    }
+
+
     private fun setChartData() {
         val entries = mutableListOf<Entry>()
 
         // 1~7일 동안의 1~7의 값을 가지는 데이터를 entries에 추가
-        entries.add(Entry(1.toFloat(), 30.toFloat()))
-        entries.add(Entry(2.toFloat(), 80.toFloat()))
-        entries.add(Entry(3.toFloat(), 66.toFloat()))
-        entries.add(Entry(4.toFloat(), 59.toFloat()))
-        entries.add(Entry(5.toFloat(), 49.toFloat()))
-        entries.add(Entry(6.toFloat(), 47.toFloat()))
-        entries.add(Entry(7.toFloat(), 89.toFloat()))
+        entries.add(Entry(1.toFloat(), 0.toFloat()))
+        entries.add(Entry(2.toFloat(), 0.toFloat()))
+        entries.add(Entry(3.toFloat(), 0.toFloat()))
+        entries.add(Entry(4.toFloat(), 0.toFloat()))
+        entries.add(Entry(5.toFloat(), 0.toFloat()))
+        entries.add(Entry(6.toFloat(), 0.toFloat()))
+        entries.add(Entry(7.toFloat(), 0.toFloat()))
 
         val icons = mutableListOf<Int>()
 
