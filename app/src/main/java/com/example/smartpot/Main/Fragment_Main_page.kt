@@ -67,7 +67,8 @@ class Fragment_Main_page: Fragment() {
     private lateinit var db: FirebaseFirestore
 
     var userDevices: ArrayList<String> = arrayListOf() // 유저 화분 번호 저장
-    var username: String = "user2" // 유저 이름 임시저장
+    var username: String = "user1" // 유저 이름 임시저장
+    var currentPosition : Int = 0 // 현재 페이지 index 저장
 
     // 파이어베이스 nowdata 저장용 클레스
     data class NowData(
@@ -167,7 +168,7 @@ class Fragment_Main_page: Fragment() {
         DataHolder.historicalDataMap.clear()
         DataHolder.userDevices.clear()
 
-        var currentPosition : Int = 0
+
         val lastPageIndex = sharedPreferences.getInt("lastPageIndex", 0)
         viewPager.setCurrentItem(lastPageIndex, false)
 
@@ -194,7 +195,7 @@ class Fragment_Main_page: Fragment() {
                         withContext(Dispatchers.Main) {
                             addNewPage(nowData.name ?: "하트호야") // 기기 종류에 따라 페이지 추가
                         }
-
+                        updateIndicators(0)
                         // 데이터 리스너 설정
                         setNowDataListener(deviceId, currentPosition)
                         setHistoricalDataListener(deviceId, currentPosition)
@@ -397,10 +398,12 @@ class Fragment_Main_page: Fragment() {
                 val nowData = snapshot.toObject(NowData::class.java)
                 if (nowData != null) {
                     // DataHolder 업데이트
+                    Log.d(deviceId,deviceId)
+                    Log.d(deviceId,(deviceId == DataHolder.userDevices[currentPosition]).toString())
                     DataHolder.devicesCurrentData[deviceIndex] = nowData
 
                     // 현재 페이지가 해당 기기일 경우 UI 업데이트
-                    if (viewPager.currentItem == deviceIndex) {
+                    if (deviceId.equals(DataHolder.userDevices[currentPosition])) {
                         updateCurrentDeviceUI(nowData)
                     }
                 }
@@ -460,9 +463,7 @@ class Fragment_Main_page: Fragment() {
 
     // UI 업데이트를 위한 함수
     fun updateCurrentDeviceUI(nowData: NowData) {
-        yesterdayTemperature.text = nowData.temperature?.roundToInt().toString() + " ℃"
         currentTemperature.text = nowData.temperature?.roundToInt().toString() + " ℃"
-        yesterdayMoisture.text = nowData.humidity?.roundToInt().toString() + " %"
         currentMoisture.text = nowData.humidity?.roundToInt().toString() + " %"
     }
 
