@@ -39,7 +39,9 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
 import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.user.model.User
 import kotlinx.coroutines.Dispatchers
@@ -218,6 +220,8 @@ class Fragment_Main_page: Fragment() {
                         setHistoricalDataListener(deviceId, currentPosition)
                     }
                 }
+            }else{
+                saveUserDataToFirestore(username,"")
             }
         }
 
@@ -294,6 +298,36 @@ class Fragment_Main_page: Fragment() {
         val startOffset = viewPagerPadding.toFloat() / (screen - 2 * viewPagerPadding)
         viewPager.setPageTransformer(CardsPagerTransformerShift(0, 50, 0.75f, startOffset))
         return view
+    }
+
+
+    fun saveUserDataToFirestore(username: String, deviceId: String) {
+        val firestore = FirebaseFirestore.getInstance()
+        val userRef = firestore.collection("users").document(username)
+
+        // devices 배열 필드 업데이트 (기존 데이터에 추가)
+        userRef.update("devices", FieldValue.arrayUnion(deviceId))
+            .addOnSuccessListener {
+                // 저장 성공 처리
+                Log.d("Firestore", "Device added successfully to $username")
+            }
+            .addOnFailureListener { exception ->
+                // 문서가 없으면 새로 생성
+                if (exception is FirebaseFirestoreException && exception.code == FirebaseFirestoreException.Code.NOT_FOUND) {
+                    val newUserData = mapOf(
+                        "devices" to emptyList<String>() // devices 필드를 빈 배열로 설정
+                    )
+                    userRef.set(newUserData)
+                        .addOnSuccessListener {
+                            Log.d("Firestore", "New user created and device added successfully")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("Firestore", "Error creating user: ${e.message}")
+                        }
+                } else {
+                    Log.e("Firestore", "Error updating user data: ${exception.message}")
+                }
+            }
     }
 
 
