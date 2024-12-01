@@ -40,6 +40,8 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.firebase.firestore.FirebaseFirestore
+import com.kakao.sdk.user.UserApiClient
+import com.kakao.sdk.user.model.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -276,7 +278,36 @@ class Fragment_Main_page: Fragment() {
         val screen = requireActivity().windowManager.defaultDisplay.width
         val startOffset = viewPagerPadding.toFloat() / (screen - 2 * viewPagerPadding)
         viewPager.setPageTransformer(CardsPagerTransformerShift(0, 50, 0.75f, startOffset))
+        loadUserInfo()
         return view
+    }
+    private fun loadUserInfo() {
+        // Get user information
+        UserApiClient.instance.me { user: User?, error ->
+            if (error != null) {
+                Log.e("KakaoLogin", "Failed to get user info: ${error.message}")
+            } else if (user != null) {
+                val email = user.kakaoAccount?.email ?: "No Email"
+                val nickname = user.kakaoAccount?.profile?.nickname ?: "Unknown"
+
+                // Log email and nickname
+                Log.d("KakaoLogin", "User Email: $email")
+                Log.d("KakaoLogin", "User Nickname: $nickname")
+
+                // Pass email to Fragment_Main_page
+                val bundle = Bundle().apply {
+                    putString("email", email)
+                }
+
+                val fragmentMainPage = Fragment_Main_page()
+                fragmentMainPage.arguments = bundle
+
+                // Replace current fragment with Fragment_Main_page
+                parentFragmentManager.beginTransaction()
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
     }
 
     // 파이어베이스에서 6일 이전의 데이터 가져오는 함수
