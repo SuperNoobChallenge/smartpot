@@ -43,6 +43,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.user.model.User
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -51,6 +52,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
+import kotlin.math.log
 
 
 class Fragment_Main_page: Fragment() {
@@ -69,7 +73,6 @@ class Fragment_Main_page: Fragment() {
     private lateinit var db: FirebaseFirestore
 
     var userDevices: ArrayList<String> = arrayListOf() // 유저 화분 번호 저장
-    var username: String = "user1" // 유저 이름 임시저장
     var currentPosition : Int = 0 // 현재 페이지 index 저장
 
     // 파이어베이스 nowdata 저장용 클레스
@@ -174,13 +177,28 @@ class Fragment_Main_page: Fragment() {
         val lastPageIndex = sharedPreferences.getInt("lastPageIndex", 0)
         viewPager.setCurrentItem(lastPageIndex, false)
 
-
-        // devicesCurrentData 초기화
-        var devicesCurrentData: ArrayList<NowData> = ArrayList()
-
         // 코루틴을 사용하여 데이터 로딩
         lifecycleScope.launch {
+            // async-await를 사용하여 순차적 실행 보장
+            val userResult = async {
+                suspendCoroutine<String> { continuation ->
+                    UserApiClient.instance.me { user: User?, error ->
+                        if (user != null) {
+                            val email = user.kakaoAccount?.email ?: ""
+                            continuation.resume(email)
+                        } else {
+                            continuation.resume("")
+                        }
+                    }
+                }
+            }
+
+            val username = userResult.await()
+
+            // username을 사용하여 사용자 데이터 가져오기
             val userData = fetchUserData(username)
+
+            // 나머지 코드는 동일
             if (userData != null) {
                 DataHolder.userDevices.addAll(userData.devices ?: emptyList())
 
@@ -189,16 +207,13 @@ class Fragment_Main_page: Fragment() {
                     if (nowData != null) {
                         DataHolder.devicesCurrentData.add(nowData)
 
-                        // 히스토리컬 데이터 가져오기
                         val historicalDataList = fetchHistoricalData(deviceId)
                         DataHolder.historicalDataMap[deviceId] = historicalDataList
 
-                        // UI 업데이트는 메인 스레드에서 수행
                         withContext(Dispatchers.Main) {
-                            addNewPage(nowData.name ?: "하트호야") // 기기 종류에 따라 페이지 추가
+                            addNewPage(nowData.name ?: "하트호야")
                         }
                         updateIndicators(0)
-                        // 데이터 리스너 설정
                         setNowDataListener(deviceId, currentPosition)
                         setHistoricalDataListener(deviceId, currentPosition)
                     }
@@ -278,37 +293,9 @@ class Fragment_Main_page: Fragment() {
         val screen = requireActivity().windowManager.defaultDisplay.width
         val startOffset = viewPagerPadding.toFloat() / (screen - 2 * viewPagerPadding)
         viewPager.setPageTransformer(CardsPagerTransformerShift(0, 50, 0.75f, startOffset))
-        loadUserInfo()
         return view
     }
-    private fun loadUserInfo() {
-        // Get user information
-        UserApiClient.instance.me { user: User?, error ->
-            if (error != null) {
-                Log.e("KakaoLogin", "Failed to get user info: ${error.message}")
-            } else if (user != null) {
-                val email = user.kakaoAccount?.email ?: "No Email"
-                val nickname = user.kakaoAccount?.profile?.nickname ?: "Unknown"
 
-                // Log email and nickname
-                Log.d("KakaoLogin", "User Email: $email")
-                Log.d("KakaoLogin", "User Nickname: $nickname")
-
-                // Pass email to Fragment_Main_page
-                val bundle = Bundle().apply {
-                    putString("email", email)
-                }
-
-                val fragmentMainPage = Fragment_Main_page()
-                fragmentMainPage.arguments = bundle
-
-                // Replace current fragment with Fragment_Main_page
-                parentFragmentManager.beginTransaction()
-                    .addToBackStack(null)
-                    .commit()
-            }
-        }
-    }
 
     // 파이어베이스에서 6일 이전의 데이터 가져오는 함수
     suspend fun fetchHistoricalData(deviceId: String): List<HistoricalData> {
