@@ -11,10 +11,16 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.core.app.ActivityCompat
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.kakao.sdk.user.UserApiClient
+import com.kakao.sdk.user.model.User
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.*
+import kotlin.coroutines.resume
 
 class hardtest : AppCompatActivity() {
     private val TAG = "BluetoothChat"
@@ -39,12 +45,11 @@ class hardtest : AppCompatActivity() {
 
         setContentView(R.layout.hardtest)
 
-//        // BuildConfig에서 값 가져오기
-//        val apiKey = BuildConfig.API_KEY
-//        val databaseUrl = BuildConfig.DATABASE_URL
-//
-//        Log.d("Config", "API Key: $apiKey")
-//        Log.d("Config", "Database URL: $databaseUrl")
+        // 유저 정보 받기
+        var email:String = ""
+         UserApiClient.instance.me { user: User?, error ->
+             email = user?.kakaoAccount?.email.toString() ?: ""
+        }
 
         // UI 컴포넌트 초기화
         btn_bltPairing = findViewById(R.id.btn_bltPairing)
@@ -99,6 +104,36 @@ class hardtest : AppCompatActivity() {
         }
     }
 
+    // 파이어베이스에 기기 데이터 전송
+    fun saveUserDataToFirestore(username: String, deviceId: String) {
+        val firestore = FirebaseFirestore.getInstance()
+        val userRef = firestore.collection("users").document(username)
+
+        // devices 배열 필드 업데이트 (기존 데이터에 추가)
+        userRef.update("devices", FieldValue.arrayUnion(deviceId))
+            .addOnSuccessListener {
+                // 저장 성공 처리
+                Log.d("Firestore", "Device added successfully to $username")
+            }
+            .addOnFailureListener { exception ->
+                // 문서가 없으면 새로 생성
+                if (exception is FirebaseFirestoreException && exception.code == FirebaseFirestoreException.Code.NOT_FOUND) {
+                    val newUserData = mapOf(
+                        "devices" to emptyList<String>() // devices 필드를 빈 배열로 설정
+                    )
+                    userRef.set(newUserData)
+                        .addOnSuccessListener {
+                            Log.d("Firestore", "New user created and device added successfully")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("Firestore", "Error creating user: ${e.message}")
+                        }
+                } else {
+                    Log.e("Firestore", "Error updating user data: ${exception.message}")
+                }
+            }
+    }
+
     private fun showPasswordDialog(ssid: String) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("비밀번호 입력")
@@ -125,6 +160,7 @@ class hardtest : AppCompatActivity() {
     }
 
     private fun connectToDevice() {
+
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.BLUETOOTH_CONNECT
