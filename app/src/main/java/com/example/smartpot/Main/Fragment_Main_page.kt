@@ -1,4 +1,5 @@
 package com.example.smartpot.Main
+import android.app.Activity.RESULT_OK
 import kotlin.math.roundToInt
 import android.app.AlertDialog
 import android.content.ContentValues.TAG
@@ -57,6 +58,9 @@ import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import kotlin.math.log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+
 
 
 class Fragment_Main_page: Fragment() {
@@ -76,6 +80,9 @@ class Fragment_Main_page: Fragment() {
 
     var userDevices: ArrayList<String> = arrayListOf() // 유저 화분 번호 저장
     var currentPosition : Int = 0 // 현재 페이지 index 저장
+
+    // 기기 추가를 완료했을 때 리프레시를 위한 ActivityResultLauncher 초기화
+    private lateinit var launcher: ActivityResultLauncher<Intent>
 
     // 파이어베이스 nowdata 저장용 클레스
     data class NowData(
@@ -222,6 +229,146 @@ class Fragment_Main_page: Fragment() {
                 }
             }else{
                 saveUserDataToFirestore(username,"")
+            }
+        }
+
+        fun refreshData() {
+            // 코루틴을 사용하여 데이터 로딩
+            lifecycleScope.launch {
+                // async-await를 사용하여 순차적 실행 보장
+                val userResult = async {
+                    suspendCoroutine<String> { continuation ->
+                        UserApiClient.instance.me { user: User?, error ->
+                            if (user != null) {
+                                val email = user.kakaoAccount?.email ?: ""
+                                continuation.resume(email)
+                            } else {
+                                continuation.resume("")
+                            }
+                        }
+                    }
+                }
+
+                val username = userResult.await()
+
+                // 새로운 데이터 구조를 임시로 생성
+                val newDevicesCurrentData = ArrayList<NowData>()
+                val newHistoricalDataMap = mutableMapOf<String, List<HistoricalData>>()
+                val newUserDevices = ArrayList<String>()
+
+                // username을 사용하여 사용자 데이터 가져오기
+                val userData = fetchUserData(username)
+
+                // 데이터를 새 객체에 저장
+                if (userData != null) {
+                    newUserDevices.addAll(userData.devices ?: emptyList())
+
+                    for (deviceId in newUserDevices) {
+                        val nowData = fetchNowData(deviceId)
+                        if (nowData != null) {
+                            newDevicesCurrentData.add(nowData)
+
+                            val historicalDataList = fetchHistoricalData(deviceId)
+                            newHistoricalDataMap[deviceId] = historicalDataList
+
+                            if(newUserDevices.size > DataHolder.userDevices.size){
+                                withContext(Dispatchers.Main) {
+                                    addNewPage(nowData.name ?: "하트호야")
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    saveUserDataToFirestore(username, "")
+                }
+
+                // 작업이 끝난 후 기존 데이터를 새로운 데이터로 덮어씌움
+                withContext(Dispatchers.Main) {
+                    DataHolder.devicesCurrentData = newDevicesCurrentData
+                    DataHolder.historicalDataMap = newHistoricalDataMap
+                    DataHolder.userDevices = newUserDevices
+
+                    // UI 갱신
+                    updateIndicators(newUserDevices.size-1)
+                    viewPager.setCurrentItem(newUserDevices.size-1, false)
+                    currentPosition = newUserDevices.size-1
+//                    currentPosition = newUserDevices.size-1
+//                        if (newUserDevices.isNotEmpty()) {
+//                            val currentPositionDeviceId = newUserDevices[currentPosition]
+//                            setNowDataListener(currentPositionDeviceId, currentPosition)
+//                            setHistoricalDataListener(currentPositionDeviceId, currentPosition)
+//                    }
+                }
+            }
+        }
+
+
+//        fun refreshData() {
+//            // 코루틴을 사용하여 데이터 로딩
+//            lifecycleScope.launch {
+//                // async-await를 사용하여 순차적 실행 보장
+//                val userResult = async {
+//                    // 이전 기록을 저장하기 위한 변수 DataHolder 초기화
+//                    DataHolder.devicesCurrentData.clear()
+//                    DataHolder.historicalDataMap.clear()
+//                    DataHolder.userDevices.clear()
+//
+//                    suspendCoroutine<String> { continuation ->
+//                        UserApiClient.instance.me { user: User?, error ->
+//                            if (user != null) {
+//                                val email = user.kakaoAccount?.email ?: ""
+//                                continuation.resume(email)
+//                            } else {
+//                                continuation.resume("")
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                val username = userResult.await()
+//
+//                // username을 사용하여 사용자 데이터 가져오기
+//                val userData = fetchUserData(username)
+//
+//                // 나머지 코드는 동일
+//                if (userData != null) {
+//                    DataHolder.userDevices.addAll(userData.devices ?: emptyList())
+//
+//                    for (deviceId in DataHolder.userDevices) {
+//                        val nowData = fetchNowData(deviceId)
+//                        if (nowData != null) {
+//                            DataHolder.devicesCurrentData.add(nowData)
+//
+//                            val historicalDataList = fetchHistoricalData(deviceId)
+//                            DataHolder.historicalDataMap[deviceId] = historicalDataList
+//
+//                            withContext(Dispatchers.Main) {
+//                                addNewPage(nowData.name ?: "하트호야")
+//                            }
+//                            updateIndicators(0)
+//                            setNowDataListener(deviceId, currentPosition)
+//                            setHistoricalDataListener(deviceId, currentPosition)
+//                        }
+//                    }
+//                }else{
+//                    saveUserDataToFirestore(username,"")
+//                }
+//            }
+//        }
+
+        // 기기 추가 리프레시를 위한 ActivityResultLauncher 초기화
+        launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            // Handle the result
+            Log.e("ActivityResult", "result: $result, resultCode: ${result.resultCode}")
+            if (result.resultCode == RESULT_OK) {
+                val refreshRequired = result.data?.getBooleanExtra("REFRESH_REQUIRED", false) ?: true
+                if (refreshRequired) {
+                    // Reload data and update UI
+                    Log.d("ActivityResult", "Refreshing data")
+                    refreshData()
+                }
+            } else {
+                Log.w("ActivityResult", "RESULT_CANCELED or no data returned")
             }
         }
 
@@ -451,11 +598,14 @@ class Fragment_Main_page: Fragment() {
                 if (nowData != null) {
                     // DataHolder 업데이트
                     Log.d(deviceId,deviceId)
-                    Log.d(deviceId,(deviceId == DataHolder.userDevices[currentPosition]).toString())
-                    DataHolder.devicesCurrentData[deviceIndex] = nowData
+                    Log.d(deviceId,(deviceId == DataHolder.userDevices[deviceIndex]).toString()) // 버그
+
+                    var idx = DataHolder.userDevices.indexOf(deviceId)
+                    DataHolder.devicesCurrentData[idx] = nowData
+
 
                     // 현재 페이지가 해당 기기일 경우 UI 업데이트
-                    if (deviceId.equals(DataHolder.userDevices[currentPosition])) {
+                    if (currentPosition < DataHolder.userDevices.size && deviceId.equals(DataHolder.userDevices[currentPosition])) {
                         updateCurrentDeviceUI(nowData)
                     }
                 }
@@ -504,7 +654,7 @@ class Fragment_Main_page: Fragment() {
                 DataHolder.historicalDataMap[deviceId] = historicalDataList
 
                 // 현재 페이지가 해당 기기일 경우 차트 업데이트
-                if (viewPager.currentItem == deviceIndex) {
+                if (viewPager.currentItem == DataHolder.userDevices.indexOf(deviceId)) {
                     setChartData(historicalDataList)
                 }
             } else {
@@ -558,7 +708,7 @@ class Fragment_Main_page: Fragment() {
                 5 -> {
                     // Intent로 hardtest 액티비티로 이동
                     val intent = Intent(requireContext(), hardtest::class.java)
-                    startActivity(intent)
+                    launcher.launch(intent)  // Change this line
                 }
             }
         }

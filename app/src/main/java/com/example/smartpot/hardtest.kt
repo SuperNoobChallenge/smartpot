@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -40,15 +41,16 @@ class hardtest : AppCompatActivity() {
     private val wifiNetworks = ArrayList<String>()
     private lateinit var wifiAdapter: ArrayAdapter<String>
 
+    var useremail:String = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.hardtest)
 
         // 유저 정보 받기
-        var email:String = ""
+
          UserApiClient.instance.me { user: User?, error ->
-             email = user?.kakaoAccount?.email.toString() ?: ""
+             useremail = user?.kakaoAccount?.email.toString() ?: ""
         }
 
         // UI 컴포넌트 초기화
@@ -275,7 +277,7 @@ class hardtest : AppCompatActivity() {
                             }
                             isScanningWifi -> {
                                 // WiFi 네트워크 추가
-                                if(trimmedLine != ""){
+                                if (trimmedLine != "") {
                                     wifiNetworks.add(trimmedLine)
                                 }
                             }
@@ -285,10 +287,33 @@ class hardtest : AppCompatActivity() {
                             trimmedLine == "WIFI_CONNECT_FAILED" -> {
                                 Toast.makeText(this, "Wi-Fi 연결 실패!", Toast.LENGTH_SHORT).show()
                             }
+                            trimmedLine.startsWith("MACADDRESS ") -> {
+                                val macAddress = trimmedLine.substringAfter("MACADDRESS ").trim()
+                                Log.d(TAG, "추출된 MAC Address: $macAddress")
+
+                                saveUserDataToFirestore(useremail, macAddress)
+
+                                val firestore = FirebaseFirestore.getInstance()
+                                val userRef = firestore.collection("users").document(useremail)
+
+                                // Firestore 작업 후 액티비티 종료
+                                userRef.update("devices", FieldValue.arrayUnion(macAddress))
+                                    .addOnSuccessListener {
+                                        Toast.makeText(this, "Wi-Fi 연결 성공!", Toast.LENGTH_SHORT).show()
+                                        // 결과 반환
+                                        val resultIntent = Intent()
+                                        resultIntent.putExtra("REFRESH_REQUIRED", true) // 리프레시가 필요한지 여부
+                                        setResult(RESULT_OK, resultIntent)
+
+                                        finish() // Firestore 작업 완료 후 창 종료
+                                    }
+                                    .addOnFailureListener {
+                                        Toast.makeText(this, "데이터 저장 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                            }
                             else -> {
                                 // 기타 메시지 처리
-                                Toast.makeText(this, "ESP32로부터: $trimmedLine", Toast.LENGTH_SHORT)
-                                    .show()
+//                                Toast.makeText(this, "ESP32로부터: $trimmedLine", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
