@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -22,6 +23,7 @@ class Fragment_main_Hearthoya : Fragment(), UpdatableFragment {
     private var temperatureTextView: TextView? = null
     private var humidityTextView: TextView? = null
     private var moistureTextView: TextView? = null
+    private var batteryImageView: ImageView? =null
 
     // SharedViewModel
     private lateinit var sharedViewModel: SharedViewModel
@@ -42,6 +44,7 @@ class Fragment_main_Hearthoya : Fragment(), UpdatableFragment {
         temperatureTextView = rootView.findViewById(R.id.TextView_Hearthoya_temperature)
         humidityTextView = rootView.findViewById(R.id.TextView_Hearthoya_humidity)
         moistureTextView = rootView.findViewById(R.id.TextView_Hearthoya_moisture)
+        batteryImageView = rootView.findViewById(R.id.ImageView_Hearthoya_battery)
         return rootView
     }
 
@@ -64,7 +67,7 @@ class Fragment_main_Hearthoya : Fragment(), UpdatableFragment {
         temperatureTextView?.text = "00 ℃"
         humidityTextView?.text = "00 %"
         moistureTextView?.text = "00 %"
-
+        batteryImageView?.setImageResource(R.drawable.icon_bat_low)
         // 버튼 리스너 설정
         view.findViewById<Button>(R.id.harthoya_grow)?.setOnClickListener {
             val customDialogFragment = Fragment_CustomDialog_hearhoya()
@@ -79,6 +82,15 @@ class Fragment_main_Hearthoya : Fragment(), UpdatableFragment {
             ((4095-it.toFloat()) / 4095.0f) * 100
         }
             ?: 0f).roundToInt().toString()+" %" // avgHumidity를 사용합니다.
+        if(nowData.batteryPercentageRound ?: 0 >= 75){
+            batteryImageView?.setImageResource(R.drawable.icon_bat_max)
+        }else if(nowData.batteryPercentageRound ?: 0 >= 50){
+            batteryImageView?.setImageResource(R.drawable.icon_bat_hi)
+        }else if(nowData.batteryPercentageRound ?: 0 >= 25){
+            batteryImageView?.setImageResource(R.drawable.icon_bat_mid)
+        }else{
+            batteryImageView?.setImageResource(R.drawable.icon_bat_low)
+        }
     }
 
     companion object {
