@@ -60,7 +60,7 @@ import kotlin.coroutines.suspendCoroutine
 import kotlin.math.log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-
+import com.example.smartpot.Main.Dictionary.UpdatableFragment
 
 
 class Fragment_Main_page: Fragment() {
@@ -222,9 +222,16 @@ class Fragment_Main_page: Fragment() {
                         withContext(Dispatchers.Main) {
                             addNewPage(nowData.name ?: "하트호야")
                         }
+
                         updateIndicators(0)
                         setNowDataListener(deviceId, currentPosition)
                         setHistoricalDataListener(deviceId, currentPosition)
+
+                        // 프레그먼트 초기화
+                        val currentFragment = fragments[DataHolder.userDevices.indexOf(deviceId)]
+                        if (currentFragment is UpdatableFragment) {
+                            currentFragment.updateUI(nowData)
+                        }
                     }
                 }
             }else{
@@ -507,6 +514,11 @@ class Fragment_Main_page: Fragment() {
                     var idx = DataHolder.userDevices.indexOf(deviceId)
                     DataHolder.devicesCurrentData[idx] = nowData
 
+
+//                    val currentFragment = fragments[DataHolder.userDevices.indexOf(deviceId)]
+//                    if (currentFragment is UpdatableFragment) {
+//                        currentFragment.updateUI(nowData)
+//                    }
 
                     // 현재 페이지가 해당 기기일 경우 UI 업데이트
                     if (currentPosition < DataHolder.userDevices.size && deviceId.equals(DataHolder.userDevices[currentPosition])) {
