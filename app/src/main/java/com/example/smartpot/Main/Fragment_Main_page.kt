@@ -227,6 +227,7 @@ class Fragment_Main_page: Fragment() {
                         val historicalDataList = fetchHistoricalData(deviceId)
                         DataHolder.historicalDataMap[deviceId] = historicalDataList
 
+                        // "하트호야", "스투키", "선인장", "피쉬본", "괴마옥"
                         withContext(Dispatchers.Main) {
                             addNewPage(nowData.name ?: "하트호야", deviceId)
                         }
@@ -235,11 +236,6 @@ class Fragment_Main_page: Fragment() {
                         setNowDataListener(deviceId, currentPosition)
                         setHistoricalDataListener(deviceId, currentPosition)
 
-//                        // 프레그먼트 초기화
-//                        val currentFragment = fragments[DataHolder.userDevices.indexOf(deviceId)]
-//                        if (currentFragment is UpdatableFragment) {
-//                            currentFragment.updateUI(nowData)
-//                        }
 
                         // ViewModel 업데이트
                         sharedViewModel.updateNowData(deviceId, nowData)
@@ -636,10 +632,10 @@ class Fragment_Main_page: Fragment() {
 
         val fragment = when (deviceType) {
             "하트호야" -> Fragment_main_Hearthoya.newInstance(fragments.size + 1,deviceId)
-            "스투키" -> Fragment_main_Stucky.newInstance(fragments.size + 1)
-            "선인장" -> Fragment_main_Cactus.newInstance(fragments.size + 1)
-            "피쉬본" -> Fragment_main_Fishbone.newInstance(fragments.size + 1)
-            "괴마옥" -> Fragment_main_Haunted_house.newInstance(fragments.size + 1)
+            "스투키" -> Fragment_main_Stucky.newInstance(fragments.size + 1,deviceId)
+            "선인장" -> Fragment_main_Cactus.newInstance(fragments.size + 1,deviceId)
+            "피쉬본" -> Fragment_main_Fishbone.newInstance(fragments.size + 1,deviceId)
+            "괴마옥" -> Fragment_main_Haunted_house.newInstance(fragments.size + 1,deviceId)
             else -> Fragment_main_Hearthoya.newInstance(fragments.size + 1, deviceId)
         }
 
@@ -733,7 +729,7 @@ class Fragment_Main_page: Fragment() {
             viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
         }
 
-        fragments.add(Fragment_main_Stucky.newInstance(fragments.size + 1))
+        fragments.add(Fragment_main_Stucky.newInstance(fragments.size + 1,"Test"))
         addNewPage2()
         updateButtonInCurrentFragment()
     }
@@ -743,7 +739,7 @@ class Fragment_Main_page: Fragment() {
             viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
         }
 
-        fragments.add(Fragment_main_Cactus.newInstance(fragments.size + 1))
+        fragments.add(Fragment_main_Cactus.newInstance(fragments.size + 1,"Test"))
         addNewPage2()
         updateButtonInCurrentFragment()
     }
@@ -753,7 +749,7 @@ class Fragment_Main_page: Fragment() {
             viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
         }
 
-        fragments.add(Fragment_main_Fishbone.newInstance(fragments.size + 1))
+        fragments.add(Fragment_main_Fishbone.newInstance(fragments.size + 1,"Test"))
         addNewPage2()
         updateButtonInCurrentFragment()
     }
@@ -763,7 +759,7 @@ class Fragment_Main_page: Fragment() {
             viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
         }
 
-        fragments.add(Fragment_main_Haunted_house.newInstance(fragments.size + 1))
+        fragments.add(Fragment_main_Haunted_house.newInstance(fragments.size + 1,"Test"))
         addNewPage2()
         updateButtonInCurrentFragment()
     }

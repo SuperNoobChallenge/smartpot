@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:paddingLeft="5dp"
-                android:text="D-10"
+                android:text="   "
                 android:textStyle="bold"
                 android:textSize="20sp"/>
         </LinearLayout>
@@ -38,7 +38,8 @@
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/icon_main_star" />
+                android:id="@+id/ImageView_Haunted_house_battery"
+                android:src="@drawable/icon_bat_max" />
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
@@ -111,13 +112,14 @@
                     android:layout_height="20dp"
                     android:src="@drawable/icon_main_thermometer"/>
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="17 %"
-                    android:paddingLeft="6dp"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:textSize="12dp"/>
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/TextView_Haunted_house_temperature"
+                android:text="17 %"
+                android:paddingLeft="6dp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textSize="12dp"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -129,13 +131,14 @@
                     android:layout_height="20dp"
                     android:src="@drawable/icon_main_null_water"/>
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="17 %"
-                    android:paddingLeft="6dp"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:textSize="12dp"/>
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/TextView_Haunted_house_humidity"
+                android:text="17 %"
+                android:paddingLeft="6dp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textSize="12dp"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -146,13 +149,14 @@
                     android:layout_height="20dp"
                     android:src="@drawable/icon_main_full_water"/>
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="17 %"
-                    android:paddingLeft="6dp"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:textSize="12dp"/>
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/TextView_Haunted_house_moisture"
+                android:text="17 %"
+                android:paddingLeft="6dp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:textSize="12dp"/>
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
