@@ -291,6 +291,7 @@ class hardtest : AppCompatActivity() {
                                 val macAddress = trimmedLine.substringAfter("MACADDRESS ").trim()
                                 Log.d(TAG, "추출된 MAC Address: $macAddress")
 
+                                // MAC 주소 Firestore에 저장
                                 saveUserDataToFirestore(useremail, macAddress)
 
                                 val firestore = FirebaseFirestore.getInstance()
@@ -300,17 +301,21 @@ class hardtest : AppCompatActivity() {
                                 userRef.update("devices", FieldValue.arrayUnion(macAddress))
                                     .addOnSuccessListener {
                                         Toast.makeText(this, "Wi-Fi 연결 성공!", Toast.LENGTH_SHORT).show()
-                                        // 결과 반환
-                                        val resultIntent = Intent()
-                                        resultIntent.putExtra("REFRESH_REQUIRED", true) // 리프레시가 필요한지 여부
+
+                                        // MAC 주소 결과 반환
+                                        val resultIntent = Intent().apply {
+                                            putExtra("REFRESH_REQUIRED", true) // 리프레시 필요 여부
+                                            putExtra("MAC_ADDRESS", macAddress) // MAC 주소 반환
+                                        }
                                         setResult(RESULT_OK, resultIntent)
 
-                                        finish() // Firestore 작업 완료 후 창 종료
+                                        finish() // Firestore 작업 완료 후 종료
                                     }
-                                    .addOnFailureListener {
-                                        Toast.makeText(this, "데이터 저장 실패: ${it.message}", Toast.LENGTH_SHORT).show()
+                                    .addOnFailureListener { exception ->
+                                        Toast.makeText(this, "데이터 저장 실패: ${exception.message}", Toast.LENGTH_SHORT).show()
                                     }
                             }
+
                             else -> {
                                 // 기타 메시지 처리
 //                                Toast.makeText(this, "ESP32로부터: $trimmedLine", Toast.LENGTH_SHORT).show()

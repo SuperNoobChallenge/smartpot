@@ -232,145 +232,42 @@ class Fragment_Main_page: Fragment() {
             }
         }
 
-        fun refreshData() {
-            // 코루틴을 사용하여 데이터 로딩
+        fun refreshData(macadd : String) {
             lifecycleScope.launch {
-                // async-await를 사용하여 순차적 실행 보장
-                val userResult = async {
-                    suspendCoroutine<String> { continuation ->
-                        UserApiClient.instance.me { user: User?, error ->
-                            if (user != null) {
-                                val email = user.kakaoAccount?.email ?: ""
-                                continuation.resume(email)
-                            } else {
-                                continuation.resume("")
-                            }
+                if (DataHolder.userDevices.indexOf(macadd) == -1) {
+                    DataHolder.userDevices.add(macadd)
+                    val nowData = fetchNowData(macadd)
+                    if (nowData != null) {
+                        DataHolder.devicesCurrentData.add(nowData)
+
+                        val historicalDataList = fetchHistoricalData(macadd)
+                        DataHolder.historicalDataMap[macadd] = historicalDataList
+                        withContext(Dispatchers.Main) {
+                            addNewPage(nowData.name ?: "하트호야")
                         }
+                        updateIndicators(0)
+                        setNowDataListener(macadd, currentPosition)
+                        setHistoricalDataListener(macadd, currentPosition)
                     }
-                }
-
-                val username = userResult.await()
-
-                // 새로운 데이터 구조를 임시로 생성
-                val newDevicesCurrentData = ArrayList<NowData>()
-                val newHistoricalDataMap = mutableMapOf<String, List<HistoricalData>>()
-                val newUserDevices = ArrayList<String>()
-
-                // username을 사용하여 사용자 데이터 가져오기
-                val userData = fetchUserData(username)
-
-                // 데이터를 새 객체에 저장
-                if (userData != null) {
-                    newUserDevices.addAll(userData.devices ?: emptyList())
-
-                    for (deviceId in newUserDevices) {
-                        val nowData = fetchNowData(deviceId)
-                        if (nowData != null) {
-                            newDevicesCurrentData.add(nowData)
-
-                            val historicalDataList = fetchHistoricalData(deviceId)
-                            newHistoricalDataMap[deviceId] = historicalDataList
-
-                            if(newUserDevices.size > DataHolder.userDevices.size){
-                                withContext(Dispatchers.Main) {
-                                    addNewPage(nowData.name ?: "하트호야")
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    saveUserDataToFirestore(username, "")
-                }
-
-                // 작업이 끝난 후 기존 데이터를 새로운 데이터로 덮어씌움
-                withContext(Dispatchers.Main) {
-                    DataHolder.devicesCurrentData = newDevicesCurrentData
-                    DataHolder.historicalDataMap = newHistoricalDataMap
-                    DataHolder.userDevices = newUserDevices
-
-                    // UI 갱신
-                    updateIndicators(newUserDevices.size-1)
-                    viewPager.setCurrentItem(newUserDevices.size-1, false)
-                    currentPosition = newUserDevices.size-1
-//                    currentPosition = newUserDevices.size-1
-//                        if (newUserDevices.isNotEmpty()) {
-//                            val currentPositionDeviceId = newUserDevices[currentPosition]
-//                            setNowDataListener(currentPositionDeviceId, currentPosition)
-//                            setHistoricalDataListener(currentPositionDeviceId, currentPosition)
-//                    }
                 }
             }
         }
-
-
-//        fun refreshData() {
-//            // 코루틴을 사용하여 데이터 로딩
-//            lifecycleScope.launch {
-//                // async-await를 사용하여 순차적 실행 보장
-//                val userResult = async {
-//                    // 이전 기록을 저장하기 위한 변수 DataHolder 초기화
-//                    DataHolder.devicesCurrentData.clear()
-//                    DataHolder.historicalDataMap.clear()
-//                    DataHolder.userDevices.clear()
-//
-//                    suspendCoroutine<String> { continuation ->
-//                        UserApiClient.instance.me { user: User?, error ->
-//                            if (user != null) {
-//                                val email = user.kakaoAccount?.email ?: ""
-//                                continuation.resume(email)
-//                            } else {
-//                                continuation.resume("")
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                val username = userResult.await()
-//
-//                // username을 사용하여 사용자 데이터 가져오기
-//                val userData = fetchUserData(username)
-//
-//                // 나머지 코드는 동일
-//                if (userData != null) {
-//                    DataHolder.userDevices.addAll(userData.devices ?: emptyList())
-//
-//                    for (deviceId in DataHolder.userDevices) {
-//                        val nowData = fetchNowData(deviceId)
-//                        if (nowData != null) {
-//                            DataHolder.devicesCurrentData.add(nowData)
-//
-//                            val historicalDataList = fetchHistoricalData(deviceId)
-//                            DataHolder.historicalDataMap[deviceId] = historicalDataList
-//
-//                            withContext(Dispatchers.Main) {
-//                                addNewPage(nowData.name ?: "하트호야")
-//                            }
-//                            updateIndicators(0)
-//                            setNowDataListener(deviceId, currentPosition)
-//                            setHistoricalDataListener(deviceId, currentPosition)
-//                        }
-//                    }
-//                }else{
-//                    saveUserDataToFirestore(username,"")
-//                }
-//            }
-//        }
-
         // 기기 추가 리프레시를 위한 ActivityResultLauncher 초기화
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            // Handle the result
-            Log.e("ActivityResult", "result: $result, resultCode: ${result.resultCode}")
             if (result.resultCode == RESULT_OK) {
                 val refreshRequired = result.data?.getBooleanExtra("REFRESH_REQUIRED", false) ?: true
+                val macAddress = result.data?.getStringExtra("MAC_ADDRESS") // MAC 주소 추출
+                Log.d("ActivityResult", "MAC Address: $macAddress")
+
                 if (refreshRequired) {
-                    // Reload data and update UI
                     Log.d("ActivityResult", "Refreshing data")
-                    refreshData()
+                    refreshData(macAddress.toString())
                 }
             } else {
                 Log.w("ActivityResult", "RESULT_CANCELED or no data returned")
             }
         }
+
 
         // 프레그먼트 관련 함수
         // 프레그먼트 포지션(몇 번인지 확인 하 수 있음)
@@ -414,6 +311,13 @@ class Fragment_Main_page: Fragment() {
 
                     // 차트 데이터 업데이트
                     setChartData(historicalDataList ?: emptyList())
+                }else{
+                    // 어제 데이터가 없을 경우 기본값 설정
+                    yesterdayTemperature.text = "00 ℃"
+                    yesterdayMoisture.text = "00 %"
+                    currentTemperature.text = "00 ℃"
+                    currentMoisture.text = "00 %"
+                    setChartData(emptyList())
                 }
 
                 // 포지션은 0부터 시작해 +1
@@ -447,7 +351,7 @@ class Fragment_Main_page: Fragment() {
         return view
     }
 
-
+    // 유저 정보가 없으면 문서 생성, 있으면 유저 정보에 기기 맥주소 추가
     fun saveUserDataToFirestore(username: String, deviceId: String) {
         val firestore = FirebaseFirestore.getInstance()
         val userRef = firestore.collection("users").document(username)
