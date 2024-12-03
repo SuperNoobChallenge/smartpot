@@ -60,6 +60,7 @@ import kotlin.coroutines.suspendCoroutine
 import kotlin.math.log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.ViewModelProvider
 import com.example.smartpot.Main.Dictionary.UpdatableFragment
 
 
@@ -77,6 +78,9 @@ class Fragment_Main_page: Fragment() {
     private lateinit var chart: LineChart
     private val fragments = ArrayList<Fragment>()
     private lateinit var db: FirebaseFirestore
+
+    // ViewModel 선언
+    private lateinit var sharedViewModel: SharedViewModel
 
     var userDevices: ArrayList<String> = arrayListOf() // 유저 화분 번호 저장
     var currentPosition : Int = 0 // 현재 페이지 index 저장
@@ -162,6 +166,10 @@ class Fragment_Main_page: Fragment() {
         currentMoisture = view.findViewById(R.id.current_moisture)
         currentTemperature = view.findViewById(R.id.current_temperature)
         chart = view.findViewById(R.id.plant_water_chart)
+
+        // ViewModel 초기화
+        sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+
         val pagerAdapter = ScreenSlidePagerAdapter(requireActivity())
         viewPager.adapter = pagerAdapter
 
@@ -220,18 +228,21 @@ class Fragment_Main_page: Fragment() {
                         DataHolder.historicalDataMap[deviceId] = historicalDataList
 
                         withContext(Dispatchers.Main) {
-                            addNewPage(nowData.name ?: "하트호야")
+                            addNewPage(nowData.name ?: "하트호야", deviceId)
                         }
 
                         updateIndicators(0)
                         setNowDataListener(deviceId, currentPosition)
                         setHistoricalDataListener(deviceId, currentPosition)
 
-                        // 프레그먼트 초기화
-                        val currentFragment = fragments[DataHolder.userDevices.indexOf(deviceId)]
-                        if (currentFragment is UpdatableFragment) {
-                            currentFragment.updateUI(nowData)
-                        }
+//                        // 프레그먼트 초기화
+//                        val currentFragment = fragments[DataHolder.userDevices.indexOf(deviceId)]
+//                        if (currentFragment is UpdatableFragment) {
+//                            currentFragment.updateUI(nowData)
+//                        }
+
+                        // ViewModel 업데이트
+                        sharedViewModel.updateNowData(deviceId, nowData)
                     }
                 }
             }else{
@@ -250,11 +261,14 @@ class Fragment_Main_page: Fragment() {
                         val historicalDataList = fetchHistoricalData(macadd)
                         DataHolder.historicalDataMap[macadd] = historicalDataList
                         withContext(Dispatchers.Main) {
-                            addNewPage(nowData.name ?: "하트호야")
+                            addNewPage(nowData.name ?: "하트호야", macadd)
                         }
                         updateIndicators(0)
                         setNowDataListener(macadd, currentPosition)
                         setHistoricalDataListener(macadd, currentPosition)
+
+                        // ViewModel 업데이트
+                        sharedViewModel.updateNowData(macadd, nowData)
                     }
                 }
             }
@@ -356,6 +370,34 @@ class Fragment_Main_page: Fragment() {
         val startOffset = viewPagerPadding.toFloat() / (screen - 2 * viewPagerPadding)
         viewPager.setPageTransformer(CardsPagerTransformerShift(0, 50, 0.75f, startOffset))
         return view
+    }
+
+    // ViewModel의 데이터를 관찰하여 UI 업데이트
+    private fun observeViewModel() {
+        sharedViewModel.nowDataMap.observe(viewLifecycleOwner) { nowDataMap ->
+            // 현재 페이지의 deviceId를 가져옴
+            if (currentPosition < DataHolder.userDevices.size) {
+                val deviceId = DataHolder.userDevices[currentPosition]
+                val nowData = nowDataMap[deviceId]
+                if (nowData != null) {
+                    // 현재 프래그먼트의 UI 업데이트
+                    val currentFragment = fragments[currentPosition]
+                    if (currentFragment is UpdatableFragment) {
+                        currentFragment.updateUI(nowData)
+                    }
+
+                    // 추가로 UI 요소 업데이트
+                    currentTemperature.text = "${nowData.temperature?.roundToInt()} ℃"
+                    currentMoisture.text = "${nowData.humidity?.roundToInt()} %"
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // ViewModel 관찰 시작
+        observeViewModel()
     }
 
     // 유저 정보가 없으면 문서 생성, 있으면 유저 정보에 기기 맥주소 추가
@@ -512,13 +554,12 @@ class Fragment_Main_page: Fragment() {
                     Log.d(deviceId,(deviceId == DataHolder.userDevices[deviceIndex]).toString()) // 버그
 
                     var idx = DataHolder.userDevices.indexOf(deviceId)
-                    DataHolder.devicesCurrentData[idx] = nowData
+                    if (idx != -1) {
+                        DataHolder.devicesCurrentData[idx] = nowData
 
-
-//                    val currentFragment = fragments[DataHolder.userDevices.indexOf(deviceId)]
-//                    if (currentFragment is UpdatableFragment) {
-//                        currentFragment.updateUI(nowData)
-//                    }
+                        // ViewModel 업데이트
+                        sharedViewModel.updateNowData(deviceId, nowData)
+                    }
 
                     // 현재 페이지가 해당 기기일 경우 UI 업데이트
                     if (currentPosition < DataHolder.userDevices.size && deviceId.equals(DataHolder.userDevices[currentPosition])) {
@@ -586,7 +627,7 @@ class Fragment_Main_page: Fragment() {
     }
 
 
-    fun addNewPage(deviceType: String) {
+    fun addNewPage(deviceType: String, deviceId:String) {
         if (fragments.lastOrNull() is Fragment_Blank2) {
             fragments.removeAt(fragments.size - 1)
             viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
@@ -594,12 +635,12 @@ class Fragment_Main_page: Fragment() {
 
 
         val fragment = when (deviceType) {
-            "하트호야" -> Fragment_main_Hearthoya.newInstance(fragments.size + 1)
+            "하트호야" -> Fragment_main_Hearthoya.newInstance(fragments.size + 1,deviceId)
             "스투키" -> Fragment_main_Stucky.newInstance(fragments.size + 1)
             "선인장" -> Fragment_main_Cactus.newInstance(fragments.size + 1)
             "피쉬본" -> Fragment_main_Fishbone.newInstance(fragments.size + 1)
             "괴마옥" -> Fragment_main_Haunted_house.newInstance(fragments.size + 1)
-            else -> Fragment_main_Hearthoya.newInstance(fragments.size + 1)
+            else -> Fragment_main_Hearthoya.newInstance(fragments.size + 1, deviceId)
         }
 
         fragments.add(fragment)
@@ -682,7 +723,7 @@ class Fragment_Main_page: Fragment() {
             viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
         }
 
-        fragments.add(Fragment_main_Hearthoya.newInstance(fragments.size + 1))
+        fragments.add(Fragment_main_Hearthoya.newInstance(fragments.size + 1, "Test"))
         addNewPage2()
         updateButtonInCurrentFragment()
     }
