@@ -86,12 +86,13 @@
             <Button
                 android:layout_width="70dp"
                 android:layout_height="20dp"
-                android:background="@drawable/costom_button_main_2"
+                android:background="@drawable/costom_button_main_3"
+                android:id="@+id/Cactus_is_sync"
                 style="?android:borderlessButtonStyle"
-                android:text="기기연동 +"
+                android:text="기기연동 X"
                 android:textSize="10sp"
                 android:textStyle="bold"
-                android:textColor="#54B22D"/>
+                android:textColor="#FF4500"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="100dp"/>

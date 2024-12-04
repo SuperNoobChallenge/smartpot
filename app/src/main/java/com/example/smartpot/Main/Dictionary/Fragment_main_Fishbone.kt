@@ -1,17 +1,24 @@
 package com.example.smartpot.Main.Dictionary
 
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.smartpot.Main.Fragment_Main_page.NowData
 import com.example.smartpot.Main.SharedViewModel
 import com.example.smartpot.R
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 import kotlin.math.roundToInt
 
 class Fragment_main_Fishbone : Fragment(), UpdatableFragment {
@@ -22,6 +29,7 @@ class Fragment_main_Fishbone : Fragment(), UpdatableFragment {
     private var humidityTextView: TextView? = null
     private var moistureTextView: TextView? = null
     private var batteryImageView: ImageView? =null
+    private var syncButton: Button? =null
 
     // SharedViewModel
     private lateinit var sharedViewModel: SharedViewModel
@@ -42,6 +50,7 @@ class Fragment_main_Fishbone : Fragment(), UpdatableFragment {
         humidityTextView = rootView.findViewById(R.id.TextView_Fishbone_humidity)
         moistureTextView = rootView.findViewById(R.id.TextView_Fishbone_moisture)
         batteryImageView = rootView.findViewById(R.id.ImageView_Fishbone_battery)
+        syncButton = rootView.findViewById(R.id.Fishbone_is_sync)
         return rootView
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -72,20 +81,57 @@ class Fragment_main_Fishbone : Fragment(), UpdatableFragment {
     }
 
     override fun updateUI(nowData: NowData) {
+        // 프래그먼트가 첨부된 상태인지 확인
+        if (!isAdded) {
+            Log.w("Fragment_main_Hearthoya", "Fragment is not attached. Skipping UI update.")
+            return
+        }
+
+        // 온도, 습도, 수분 텍스트 업데이트
         temperatureTextView?.text = "${nowData.temperature?.roundToInt()} ℃"
         humidityTextView?.text = "${nowData.humidity?.roundToInt()} %"
         moistureTextView?.text = (nowData.soilMoistureADC?.let {
-            ((4095-it.toFloat()) / 4095.0f) * 100
+            ((4095 - it.toFloat()) / 4095.0f) * 100
+        } ?: 0f).roundToInt().toString() + " %"
+
+        // 배터리 이미지 업데이트
+        when (nowData.batteryPercentageRound ?: 0) {
+            in 75..100 -> batteryImageView?.setImageResource(R.drawable.icon_bat_max)
+            in 50..74 -> batteryImageView?.setImageResource(R.drawable.icon_bat_hi)
+            in 25..49 -> batteryImageView?.setImageResource(R.drawable.icon_bat_mid)
+            else -> batteryImageView?.setImageResource(R.drawable.icon_bat_low)
         }
-            ?: 0f).roundToInt().toString()+" %" // avgHumidity를 사용합니다.
-        if(nowData.batteryPercentageRound ?: 0 >= 75){
-            batteryImageView?.setImageResource(R.drawable.icon_bat_max)
-        }else if(nowData.batteryPercentageRound ?: 0 >= 50){
-            batteryImageView?.setImageResource(R.drawable.icon_bat_hi)
-        }else if(nowData.batteryPercentageRound ?: 0 >= 25){
-            batteryImageView?.setImageResource(R.drawable.icon_bat_mid)
-        }else{
-            batteryImageView?.setImageResource(R.drawable.icon_bat_low)
+
+        // currentTime과 현재 시스템 시간 비교
+        nowData.currentTime?.let { timeString ->
+            val dateFormat = SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault())
+            dateFormat.timeZone = TimeZone.getTimeZone("UTC") // 필요에 따라 타임존 설정
+            try {
+                val dataTime: Date = dateFormat.parse(timeString) ?: throw Exception("Parsed Date is null")
+                val currentTime: Date = Date() // 현재 시스템 시간
+
+                // 밀리초 단위 차이 계산
+                val diffInMillis: Long = currentTime.time - dataTime.time
+
+                // 분 단위로 변환
+                val diffInMinutes: Long = diffInMillis / (1000 * 60)
+
+                if (diffInMinutes >= 30) {
+                    // 30분 이상 차이가 날 경우 수행할 작업
+                    syncButton?.setTextColor(Color.parseColor("#FF4500"))
+                    syncButton?.setBackgroundResource(R.drawable.costom_button_main_3)
+                    syncButton?.text = "기기연동 X"
+                } else {
+                    // 데이터가 최신일 경우 텍스트 색상을 기본 색상으로 설정
+                    syncButton?.setTextColor(Color.parseColor("#54B22D"))
+                    syncButton?.setBackgroundResource(R.drawable.costom_button_main_2)
+                    syncButton?.text = "기기연동 O"
+                }
+            } catch (e: Exception) {
+                Log.e("TimeComparison", "Error parsing currentTime: $timeString", e)
+                // 파싱 에러 처리 (예: 사용자에게 알림)
+                Toast.makeText(requireContext(), "시간 데이터를 처리하는 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
