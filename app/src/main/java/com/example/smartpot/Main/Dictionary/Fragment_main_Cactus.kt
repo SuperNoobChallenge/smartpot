@@ -74,7 +74,7 @@ class Fragment_main_Cactus : Fragment(), UpdatableFragment {
         temperatureTextView?.text = "00 ℃"
         humidityTextView?.text = "00 %"
         moistureTextView?.text = "00 %"
-        batteryImageView?.setImageResource(R.drawable.icon_bat_low)
+        batteryImageView?.setImageResource(R.drawable.icon_bat_empty)
         // 버튼 리스너 설정
         view.findViewById<Button>(R.id.harthoya_grow)?.setOnClickListener {
             val customDialogFragment = Fragment_CustomDialog_hearhoya()
@@ -101,7 +101,8 @@ class Fragment_main_Cactus : Fragment(), UpdatableFragment {
             in 75..100 -> batteryImageView?.setImageResource(R.drawable.icon_bat_max)
             in 50..74 -> batteryImageView?.setImageResource(R.drawable.icon_bat_hi)
             in 25..49 -> batteryImageView?.setImageResource(R.drawable.icon_bat_mid)
-            else -> batteryImageView?.setImageResource(R.drawable.icon_bat_low)
+            in 10..24 -> batteryImageView?.setImageResource(R.drawable.icon_bat_low)
+            else -> batteryImageView?.setImageResource(R.drawable.icon_bat_empty)
         }
 
         // currentTime과 현재 시스템 시간 비교
