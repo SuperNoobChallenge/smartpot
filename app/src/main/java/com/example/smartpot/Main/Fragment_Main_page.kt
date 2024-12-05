@@ -85,6 +85,7 @@ class Fragment_Main_page: Fragment() {
     var userDevices: ArrayList<String> = arrayListOf() // 유저 화분 번호 저장
     var currentPosition : Int = 0 // 현재 페이지 index 저장
 
+    var kakaoemail:String = "" //기기 추가할 때 유저 메일이 필요한데 코루틴 처리하기 귀찮아서 임시 변수 하나 구현
     // 기기 추가를 완료했을 때 리프레시를 위한 ActivityResultLauncher 초기화
     private lateinit var launcher: ActivityResultLauncher<Intent>
 
@@ -105,7 +106,8 @@ class Fragment_Main_page: Fragment() {
     )
 
     data class UserData(
-        val devices: List<String>? = null
+        val devices: List<String>? = null,
+        val name: List<String>? = null
     )
 
     data class HistoricalData(
@@ -202,6 +204,7 @@ class Fragment_Main_page: Fragment() {
                     UserApiClient.instance.me { user: User?, error ->
                         if (user != null) {
                             val email = user.kakaoAccount?.email ?: ""
+                            kakaoemail = email
                             continuation.resume(email)
                         } else {
                             continuation.resume("")
@@ -246,9 +249,42 @@ class Fragment_Main_page: Fragment() {
             }
         }
 
+        // 파이어베이스에 기기 데이터 전송
+        fun saveUserDataToFirestore(username: String) {
+            val firestore = FirebaseFirestore.getInstance()
+            val userRef = firestore.collection("users").document(kakaoemail)
+
+            firestore.runTransaction { transaction ->
+                val snapshot = transaction.get(userRef)
+                val currentNames = snapshot.get("name") as? MutableList<String> ?: mutableListOf()
+                currentNames.add("하트호야") // 중복을 허용하여 추가
+                transaction.set(userRef, mapOf("name" to currentNames), com.google.firebase.firestore.SetOptions.merge())
+            }.addOnSuccessListener {
+                // 저장 성공 처리
+                Log.d("Firestore", "Device added successfully to $username")
+            }.addOnFailureListener { e ->
+                // 문서가 없으면 새로 생성
+                if (e is FirebaseFirestoreException && e.code == FirebaseFirestoreException.Code.NOT_FOUND) {
+                    val newUserData = mapOf(
+                        "name" to listOf("하트호야") // devices 필드를 빈 배열로 설정 후 추가
+                    )
+                    userRef.set(newUserData)
+                        .addOnSuccessListener {
+                            Log.d("Firestore", "New user created and device added successfully")
+                        }
+                        .addOnFailureListener { ex ->
+                            Log.e("Firestore", "Error creating user: ${ex.message}")
+                        }
+                } else {
+                    Log.e("Firestore", "Error updating user data: ${e.message}")
+                }
+            }
+        }
+
         fun refreshData(macadd : String) {
             lifecycleScope.launch {
                 if (DataHolder.userDevices.indexOf(macadd) == -1) {
+                    saveUserDataToFirestore(macadd)
                     DataHolder.userDevices.add(macadd)
                     val nowData = fetchNowData(macadd)
                     if (nowData != null) {
@@ -411,7 +447,8 @@ class Fragment_Main_page: Fragment() {
                 // 문서가 없으면 새로 생성
                 if (exception is FirebaseFirestoreException && exception.code == FirebaseFirestoreException.Code.NOT_FOUND) {
                     val newUserData = mapOf(
-                        "devices" to emptyList<String>() // devices 필드를 빈 배열로 설정
+                        "devices" to emptyList<String>(), // devices 필드를 빈 배열로 설정
+                        "name" to emptyList<String>() // devices 필드를 빈 배열로 설정
                     )
                     userRef.set(newUserData)
                         .addOnSuccessListener {
