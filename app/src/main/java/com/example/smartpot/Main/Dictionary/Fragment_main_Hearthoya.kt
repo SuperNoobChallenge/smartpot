@@ -98,12 +98,12 @@ class Fragment_main_Hearthoya : Fragment(), UpdatableFragment {
             customDialogFragment.show(parentFragmentManager, "custom_dialog")
         }
 
-        // 루트 뷰에 롱 클릭 리스너 추가
-        view.setOnLongClickListener {
-            // 롱 클릭 시 수행할 작업
-            showAddButtonDialog()
-            true // 이벤트 소비를 나타내기 위해 true 반환
-        }
+//        // 루트 뷰에 롱 클릭 리스너 추가
+//        view.setOnLongClickListener {
+//            // 롱 클릭 시 수행할 작업
+//            showAddButtonDialog()
+//            true // 이벤트 소비를 나타내기 위해 true 반환
+//        }
     }
 
     fun updateUserNameAtIndex(username: String, index: Int, newName: String) {
@@ -152,57 +152,38 @@ class Fragment_main_Hearthoya : Fragment(), UpdatableFragment {
     }
 
 
-    private fun changeToHearthoya(){
+    fun changeToHearthoya(){
         titleTextView?.text = "하트호야"
         detailTextView?.text = "통통한 하트모양의 잎이 사랑스러운"
         titleImg?.setImageResource(R.drawable.icon_main_harthoya)
         updateUserNameAtIndex(email.toString(),pageNumber-1,"하트호야")
     }
 
-    private fun changeToStucky(){
+    fun changeToStucky(){
         titleTextView?.text = "스투키"
         detailTextView?.text = "간결하고 강렬한 스타일로 독보적인 모습을 자랑하는 신선한"
         titleImg?.setImageResource(R.drawable.icon_main_stucky)
         updateUserNameAtIndex(email.toString(),pageNumber-1,"스투키")
     }
-    private fun changeToCactus(){
+    fun changeToCactus(){
         titleTextView?.text = "선인장"
         detailTextView?.text = "작은 공간도 화사하게 만드는 친구"
         titleImg?.setImageResource(R.drawable.icon_main_cactus)
         updateUserNameAtIndex(email.toString(),pageNumber-1,"선인장")
     }
-    private fun changeToFishbone(){
+    fun changeToFishbone(){
         titleTextView?.text = "피쉬본"
         detailTextView?.text = "바다의 미묘한 아름다움을 담은 독특하고 세련된 물고기 무늬의 플랜트"
         titleImg?.setImageResource(R.drawable.icon_main_fishbone)
         updateUserNameAtIndex(email.toString(),pageNumber-1,"피쉬본")
     }
-    private fun changeToHaunted_house(){
+    fun changeToHaunted_house(){
         titleTextView?.text = "괴마옥"
         detailTextView?.text = "신비로운 아름다움과 독특한 형태로 눈길을 사로잡는"
         titleImg?.setImageResource(R.drawable.icon_main_haunted_house)
         updateUserNameAtIndex(email.toString(),pageNumber-1,"괴마옥")
     }
 
-    private fun showAddButtonDialog() {
-        val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
-
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("식물을 선택해주세요")
-
-        builder.setItems(items) { _, which ->
-            // 다이얼로그에서 항목을 선택했을 때의 처리를 여기에 추가
-            when (which) {
-                0 -> changeToHearthoya()
-                1 -> changeToStucky()
-                2 -> changeToCactus()
-                3 -> changeToFishbone()
-                4 -> changeToHaunted_house()
-            }
-        }
-
-        builder.create().show()
-    }
 
     override fun updateUI(nowData: NowData) {
         // 프래그먼트가 첨부된 상태인지 확인

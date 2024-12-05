@@ -9,7 +9,9 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.GestureDetector
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -60,7 +62,9 @@ import kotlin.coroutines.suspendCoroutine
 import kotlin.math.log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.GestureDetectorCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.example.smartpot.Main.Dictionary.UpdatableFragment
 
 
@@ -88,6 +92,8 @@ class Fragment_Main_page: Fragment() {
     var kakaoemail:String = "" //기기 추가할 때 유저 메일이 필요한데 코루틴 처리하기 귀찮아서 임시 변수 하나 구현
     // 기기 추가를 완료했을 때 리프레시를 위한 ActivityResultLauncher 초기화
     private lateinit var launcher: ActivityResultLauncher<Intent>
+
+    private lateinit var gestureDetector: GestureDetectorCompat
 
     // 파이어베이스 nowdata 저장용 클레스
     data class NowData(
@@ -183,6 +189,7 @@ class Fragment_Main_page: Fragment() {
             showAddButtonDialog()
         }
 
+
         sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
         // Firestore 인스턴스 초기화
@@ -197,6 +204,38 @@ class Fragment_Main_page: Fragment() {
 
         val lastPageIndex = sharedPreferences.getInt("lastPageIndex", 0)
         viewPager.setCurrentItem(lastPageIndex, false)
+
+        // GestureDetector 초기화
+        gestureDetector = GestureDetectorCompat(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
+            override fun onLongPress(e: MotionEvent) {
+                super.onLongPress(e)
+                handleLongPress()
+            }
+
+            override fun onDown(e: MotionEvent): Boolean {
+                return true // 다른 제스처를 인식하기 위해 true 반환
+            }
+        })
+
+        // ViewPager2 내부의 RecyclerView에 OnItemTouchListener 설정
+        val recyclerView = viewPager.getChildAt(0) as? RecyclerView
+        recyclerView?.let {
+            it.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
+                override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                    gestureDetector.onTouchEvent(e)
+                    return false // ViewPager2가 다른 터치 이벤트를 처리할 수 있도록 false 반환
+                }
+
+                override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+                    // No action needed
+                }
+
+                override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+                    // No action needed
+                }
+            })
+        }
+
 
         // 코루틴을 사용하여 데이터 로딩
         lifecycleScope.launch {
@@ -406,6 +445,122 @@ class Fragment_Main_page: Fragment() {
         val startOffset = viewPagerPadding.toFloat() / (screen - 2 * viewPagerPadding)
         viewPager.setPageTransformer(CardsPagerTransformerShift(0, 50, 0.75f, startOffset))
         return view
+    }
+
+
+
+    // 제스처 핸들링 함수
+    private fun handleLongPress() {
+        if (currentPosition < fragments.size) {
+            val fragment = fragments[currentPosition]
+            if (fragment is Fragment_main_Hearthoya && fragment.isAdded) {
+
+                val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
+
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("식물을 선택해주세요")
+
+                builder.setItems(items) { _, which ->
+                    when (which) {
+                        0 -> fragment.changeToHearthoya()
+                        1 -> fragment.changeToStucky()
+                        2 -> fragment.changeToCactus()
+                        3 -> fragment.changeToFishbone()
+                        4 -> fragment.changeToHaunted_house()
+                    }
+                }
+                builder.create().show()
+            } else if (fragment is Fragment_main_Haunted_house && fragment.isAdded) {
+                // Fragment_main_Haunted_house에 대한 처리
+                val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
+
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("식물을 선택해주세요")
+
+                builder.setItems(items) { _, which ->
+                    when (which) {
+                        0 -> fragment.changeToHearthoya()
+                        1 -> fragment.changeToStucky()
+                        2 -> fragment.changeToCactus()
+                        3 -> fragment.changeToFishbone()
+                        4 -> fragment.changeToHaunted_house()
+                    }
+                }
+                builder.create().show()
+            }else if (fragment is Fragment_main_Stucky && fragment.isAdded) {
+                // Fragment_main_Haunted_house에 대한 처리
+                val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
+
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("식물을 선택해주세요")
+
+                builder.setItems(items) { _, which ->
+                    when (which) {
+                        0 -> fragment.changeToHearthoya()
+                        1 -> fragment.changeToStucky()
+                        2 -> fragment.changeToCactus()
+                        3 -> fragment.changeToFishbone()
+                        4 -> fragment.changeToHaunted_house()
+                    }
+                }
+                builder.create().show()
+            }else if (fragment is Fragment_main_Haunted_house && fragment.isAdded) {
+                // Fragment_main_Haunted_house에 대한 처리
+                val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
+
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("식물을 선택해주세요")
+
+                builder.setItems(items) { _, which ->
+                    when (which) {
+                        0 -> fragment.changeToHearthoya()
+                        1 -> fragment.changeToStucky()
+                        2 -> fragment.changeToCactus()
+                        3 -> fragment.changeToFishbone()
+                        4 -> fragment.changeToHaunted_house()
+                    }
+                }
+                builder.create().show()
+            }else if (fragment is Fragment_main_Cactus && fragment.isAdded) {
+                // Fragment_main_Haunted_house에 대한 처리
+                val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
+
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("식물을 선택해주세요")
+
+                builder.setItems(items) { _, which ->
+                    when (which) {
+                        0 -> fragment.changeToHearthoya()
+                        1 -> fragment.changeToStucky()
+                        2 -> fragment.changeToCactus()
+                        3 -> fragment.changeToFishbone()
+                        4 -> fragment.changeToHaunted_house()
+                    }
+                }
+                builder.create().show()
+            }else if (fragment is Fragment_main_Fishbone && fragment.isAdded) {
+                // Fragment_main_Haunted_house에 대한 처리
+                val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
+
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("식물을 선택해주세요")
+
+                builder.setItems(items) { _, which ->
+                    when (which) {
+                        0 -> fragment.changeToHearthoya()
+                        1 -> fragment.changeToStucky()
+                        2 -> fragment.changeToCactus()
+                        3 -> fragment.changeToFishbone()
+                        4 -> fragment.changeToHaunted_house()
+                    }
+                }
+                builder.create().show()
+            } else {
+                Log.w("Fragment_Main_page", "현재 프래그먼트가 Fragment_main_Hearthoya가 아니거나 아직 활성화되지 않았습니다.")
+            }
+        } else {
+            Log.w("Fragment_Main_page", "currentPosition이 fragments 리스트의 범위를 벗어났습니다.")
+        }
     }
 
     // ViewModel의 데이터를 관찰하여 UI 업데이트
