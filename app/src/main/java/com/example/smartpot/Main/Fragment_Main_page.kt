@@ -63,6 +63,7 @@ import kotlin.math.log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.GestureDetectorCompat
+import androidx.core.view.size
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.smartpot.Main.Dictionary.UpdatableFragment
@@ -447,16 +448,63 @@ class Fragment_Main_page: Fragment() {
         return view
     }
 
+    private fun removeDeviceFromFirestore(username: String, deviceId: String) {
+        val firestore = FirebaseFirestore.getInstance()
+        val userRef = firestore.collection("users").document(username)
+
+        firestore.runTransaction { transaction ->
+            val snapshot = transaction.get(userRef)
+            val currentDevices = snapshot.get("devices") as? MutableList<String> ?: mutableListOf()
+            val currentNames = snapshot.get("name") as? MutableList<String> ?: mutableListOf()
+
+            // deviceId와 일치하는 이름도 제거 (동기화 필요 시)
+            val index = currentDevices.indexOf(deviceId)
+            if (index != -1) {
+                currentDevices.removeAt(index)
+                currentNames.removeAt(index)
+            }
+
+            transaction.set(userRef, mapOf("devices" to currentDevices, "name" to currentNames), com.google.firebase.firestore.SetOptions.merge())
+        }.addOnSuccessListener {
+            Log.d("Firestore", "Device removed successfully from $username")
+        }.addOnFailureListener { e ->
+            Log.e("Firestore", "Error removing device: ${e.message}")
+        }
+    }
+
+    private fun removeFragment(position: Int) {
+        if(position==0){
+            viewPager.setCurrentItem(1, false)
+        }
+        var position=0
+        // 1. Fragment 리스트에서 제거
+        fragments.removeAt(position)
+        viewPager.adapter?.notifyItemRemoved(viewPager.size-position-1)
+
+        // 2. 관련 데이터 제거
+        val deviceId = DataHolder.userDevices.removeAt(position)
+        DataHolder.userDevicesName.removeAt(position)
+        DataHolder.devicesCurrentData.removeAt(position)
+        DataHolder.historicalDataMap.remove(deviceId)
+
+        // 3. Firestore에서 사용자 데이터 업데이트 (선택 사항)
+        removeDeviceFromFirestore(kakaoemail, deviceId)
+
+        // 4. 현재 포지션이 유효한지 확인하고, 필요시 포지션 조정
+        val newPosition = if (position >= fragments.size) fragments.size - 1 else position
+        viewPager.setCurrentItem(newPosition, true)
+
+        // 5. 인디케이터 및 UI 업데이트
+        updateIndicators(newPosition)
+    }
 
 
     // 제스처 핸들링 함수
     private fun handleLongPress() {
         if (currentPosition < fragments.size) {
+            val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥","기기제거")
             val fragment = fragments[currentPosition]
             if (fragment is Fragment_main_Hearthoya && fragment.isAdded) {
-
-                val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
-
                 val builder = AlertDialog.Builder(requireContext())
                 builder.setTitle("식물을 선택해주세요")
 
@@ -467,13 +515,12 @@ class Fragment_Main_page: Fragment() {
                         2 -> fragment.changeToCactus()
                         3 -> fragment.changeToFishbone()
                         4 -> fragment.changeToHaunted_house()
+                        5 -> removeFragment(currentPosition)
                     }
                 }
                 builder.create().show()
             } else if (fragment is Fragment_main_Haunted_house && fragment.isAdded) {
                 // Fragment_main_Haunted_house에 대한 처리
-                val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
-
                 val builder = AlertDialog.Builder(requireContext())
                 builder.setTitle("식물을 선택해주세요")
 
@@ -484,13 +531,12 @@ class Fragment_Main_page: Fragment() {
                         2 -> fragment.changeToCactus()
                         3 -> fragment.changeToFishbone()
                         4 -> fragment.changeToHaunted_house()
+                        5 -> removeFragment(currentPosition)
                     }
                 }
                 builder.create().show()
             }else if (fragment is Fragment_main_Stucky && fragment.isAdded) {
                 // Fragment_main_Haunted_house에 대한 처리
-                val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
-
                 val builder = AlertDialog.Builder(requireContext())
                 builder.setTitle("식물을 선택해주세요")
 
@@ -501,13 +547,12 @@ class Fragment_Main_page: Fragment() {
                         2 -> fragment.changeToCactus()
                         3 -> fragment.changeToFishbone()
                         4 -> fragment.changeToHaunted_house()
+                        5 -> removeFragment(currentPosition)
                     }
                 }
                 builder.create().show()
             }else if (fragment is Fragment_main_Haunted_house && fragment.isAdded) {
                 // Fragment_main_Haunted_house에 대한 처리
-                val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
-
                 val builder = AlertDialog.Builder(requireContext())
                 builder.setTitle("식물을 선택해주세요")
 
@@ -518,13 +563,12 @@ class Fragment_Main_page: Fragment() {
                         2 -> fragment.changeToCactus()
                         3 -> fragment.changeToFishbone()
                         4 -> fragment.changeToHaunted_house()
+                        5 -> removeFragment(currentPosition)
                     }
                 }
                 builder.create().show()
             }else if (fragment is Fragment_main_Cactus && fragment.isAdded) {
                 // Fragment_main_Haunted_house에 대한 처리
-                val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
-
                 val builder = AlertDialog.Builder(requireContext())
                 builder.setTitle("식물을 선택해주세요")
 
@@ -535,13 +579,12 @@ class Fragment_Main_page: Fragment() {
                         2 -> fragment.changeToCactus()
                         3 -> fragment.changeToFishbone()
                         4 -> fragment.changeToHaunted_house()
+                        5 -> removeFragment(currentPosition)
                     }
                 }
                 builder.create().show()
             }else if (fragment is Fragment_main_Fishbone && fragment.isAdded) {
                 // Fragment_main_Haunted_house에 대한 처리
-                val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥")
-
                 val builder = AlertDialog.Builder(requireContext())
                 builder.setTitle("식물을 선택해주세요")
 
@@ -552,6 +595,7 @@ class Fragment_Main_page: Fragment() {
                         2 -> fragment.changeToCactus()
                         3 -> fragment.changeToFishbone()
                         4 -> fragment.changeToHaunted_house()
+                        5 -> removeFragment(currentPosition)
                     }
                 }
                 builder.create().show()
@@ -841,28 +885,9 @@ class Fragment_Main_page: Fragment() {
     }
 
     private fun showAddButtonDialog() {
-        val items = arrayOf("하트호야", "스투키", "선인장", "피쉬본", "괴마옥", "기기추가테스트")
-
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("식물을 선택해주세요")
-
-        builder.setItems(items) { _, which ->
-            // 다이얼로그에서 항목을 선택했을 때의 처리를 여기에 추가
-            when (which) {
-//                0 -> addNewPage_Hearthoya()
-////                1 -> addNewPage_Stucky()
-//                2 -> addNewPage_Cactus()
-//                3 -> addNewPage_Fishbone()
-//                4 -> addNewPage_Haunted_house()
-                5 -> {
-                    // Intent로 hardtest 액티비티로 이동
-                    val intent = Intent(requireContext(), hardtest::class.java)
-                    launcher.launch(intent)  // Change this line
-                }
-            }
-        }
-
-        builder.create().show()
+        // Intent로 hardtest 액티비티로 이동
+        val intent = Intent(requireContext(), hardtest::class.java)
+        launcher.launch(intent)  // Change this line
     }
     private fun addLimitLine() {
         // 가로선을 추가할 위치와 라벨 설정
@@ -882,6 +907,7 @@ class Fragment_Main_page: Fragment() {
         yAxisLeft.axisMinimum = 0f
         yAxisLeft.axisMaximum = 100f
     }
+
     private fun updateIndicators(currentPosition: Int) {
         val existingIndicatorCount = indicatorLayout.childCount
 
@@ -909,56 +935,6 @@ class Fragment_Main_page: Fragment() {
             )
         }
     }
-//    fun addNewPage_Hearthoya() {
-//        if (fragments.lastOrNull() is Fragment_Blank2) {
-//            fragments.removeAt(fragments.size - 1)
-//            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
-//        }
-//
-//        fragments.add(Fragment_main_Hearthoya.newInstance(fragments.size + 1, "Test"))
-//        addNewPage2()
-//        updateButtonInCurrentFragment()
-//    }
-//    fun addNewPage_Stucky() {
-//        if (fragments.lastOrNull() is Fragment_Blank2) {
-//            fragments.removeAt(fragments.size - 1)
-//            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
-//        }
-//
-//        fragments.add(Fragment_main_Stucky.newInstance(fragments.size + 1,"Test"))
-//        addNewPage2()
-//        updateButtonInCurrentFragment()
-//    }
-//    fun addNewPage_Cactus() {
-//        if (fragments.lastOrNull() is Fragment_Blank2) {
-//            fragments.removeAt(fragments.size - 1)
-//            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
-//        }
-//
-//        fragments.add(Fragment_main_Cactus.newInstance(fragments.size + 1,"Test"))
-//        addNewPage2()
-//        updateButtonInCurrentFragment()
-//    }
-//    fun addNewPage_Fishbone() {
-//        if (fragments.lastOrNull() is Fragment_Blank2) {
-//            fragments.removeAt(fragments.size - 1)
-//            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
-//        }
-//
-//        fragments.add(Fragment_main_Fishbone.newInstance(fragments.size + 1,"Test"))
-//        addNewPage2()
-//        updateButtonInCurrentFragment()
-//    }
-//    fun addNewPage_Haunted_house() {
-//        if (fragments.lastOrNull() is Fragment_Blank2) {
-//            fragments.removeAt(fragments.size - 1)
-//            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
-//        }
-//
-//        fragments.add(Fragment_main_Haunted_house.newInstance(fragments.size + 1,"Test"))
-//        addNewPage2()
-//        updateButtonInCurrentFragment()
-//    }
     fun addNewPage2() {
         val currentPosition = viewPager.currentItem
 
