@@ -51,6 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10dp"
+            android:id="@+id/TextView_Fishbone_Detail"
             android:text="바다의 미묘한 아름다움을 담은 독특하고 세련된 물고기 무늬의 플랜트"/>
 
         <TextView
@@ -58,6 +59,7 @@
             android:layout_height="wrap_content"
             android:textSize="20dp"
             android:textStyle="bold"
+            android:id="@+id/TextView_Fishbone_Title"
             android:text="피쉬본"/>
     </LinearLayout>
     <LinearLayout
@@ -168,6 +170,7 @@
             <ImageView
                 android:layout_width="150dp"
                 android:layout_height="250dp"
+                android:id="@+id/TextView_Fishbone_TitleImg"
                 android:src="@drawable/icon_main_fishbone"/>
         </LinearLayout>
     </LinearLayout>

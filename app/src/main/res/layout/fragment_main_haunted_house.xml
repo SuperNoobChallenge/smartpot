@@ -50,6 +50,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/TextView_Haunted_house_Detail"
             android:textSize="10dp"
             android:text="신비로운 아름다움과 독특한 형태로 눈길을 사로잡는"/>
 
@@ -58,6 +59,7 @@
             android:layout_height="wrap_content"
             android:textSize="20dp"
             android:textStyle="bold"
+            android:id="@+id/TextView_Haunted_house_Title"
             android:text="괴마옥"/>
     </LinearLayout>
     <LinearLayout
@@ -168,6 +170,7 @@
             <ImageView
                 android:layout_width="150dp"
                 android:layout_height="250dp"
+                android:id="@+id/TextView_Haunted_house_TitleImg"
                 android:src="@drawable/icon_main_haunted_house"/>
         </LinearLayout>
     </LinearLayout>

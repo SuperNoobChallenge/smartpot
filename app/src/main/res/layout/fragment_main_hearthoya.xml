@@ -47,17 +47,20 @@
         android:layout_height="wrap_content"
         android:paddingTop="5dp"
         android:orientation="vertical">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10dp"
-            android:text="통통한 하트모양의 잎이 사랑스러운"/>
+            android:id="@+id/TextView_Hearthoya_Detail"
+            android:text="통통한 하트모양의 잎이 사랑스러운"
+            android:textSize="10dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20dp"
             android:textStyle="bold"
+            android:id="@+id/TextView_Hearthoya_Title"
             android:text="하트호야"/>
     </LinearLayout>
     <LinearLayout
@@ -168,6 +171,7 @@
             <ImageView
                 android:layout_width="150dp"
                 android:layout_height="250dp"
+                android:id="@+id/TextView_Hearthoya_TitleImg"
                 android:src="@drawable/icon_main_harthoya"/>
         </LinearLayout>
     </LinearLayout>

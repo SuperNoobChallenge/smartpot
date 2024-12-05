@@ -121,6 +121,7 @@ class Fragment_Main_page: Fragment() {
         var devicesCurrentData: ArrayList<NowData> = ArrayList()
         var historicalDataMap: MutableMap<String, List<HistoricalData>> = mutableMapOf()
         var userDevices: ArrayList<String> = arrayListOf()
+        var userDevicesName: ArrayList<String> = arrayListOf()
     }
 
 
@@ -191,6 +192,7 @@ class Fragment_Main_page: Fragment() {
         DataHolder.devicesCurrentData.clear()
         DataHolder.historicalDataMap.clear()
         DataHolder.userDevices.clear()
+        DataHolder.userDevicesName.clear()
 
 
         val lastPageIndex = sharedPreferences.getInt("lastPageIndex", 0)
@@ -214,6 +216,7 @@ class Fragment_Main_page: Fragment() {
             }
 
             val username = userResult.await()
+            kakaoemail = username
 
             // username을 사용하여 사용자 데이터 가져오기
             val userData = fetchUserData(username)
@@ -221,8 +224,9 @@ class Fragment_Main_page: Fragment() {
             // 나머지 코드는 동일
             if (userData != null) {
                 DataHolder.userDevices.addAll(userData.devices ?: emptyList())
+                DataHolder.userDevicesName.addAll(userData.name ?: emptyList())
 
-                for (deviceId in DataHolder.userDevices) {
+                for ((deviceId, devicename) in DataHolder.userDevices.zip(DataHolder.userDevicesName)) {
                     val nowData = fetchNowData(deviceId)
                     if (nowData != null) {
                         DataHolder.devicesCurrentData.add(nowData)
@@ -232,7 +236,7 @@ class Fragment_Main_page: Fragment() {
 
                         // "하트호야", "스투키", "선인장", "피쉬본", "괴마옥"
                         withContext(Dispatchers.Main) {
-                            addNewPage(nowData.name ?: "하트호야", deviceId)
+                            addNewPage(devicename, deviceId, kakaoemail)
                         }
 
                         updateIndicators(0)
@@ -249,7 +253,7 @@ class Fragment_Main_page: Fragment() {
             }
         }
 
-        // 파이어베이스에 기기 데이터 전송
+        // 파이어베이스 유저 기기 이름 내역에 하트호야 추가
         fun saveUserDataToFirestore(username: String) {
             val firestore = FirebaseFirestore.getInstance()
             val userRef = firestore.collection("users").document(kakaoemail)
@@ -293,7 +297,7 @@ class Fragment_Main_page: Fragment() {
                         val historicalDataList = fetchHistoricalData(macadd)
                         DataHolder.historicalDataMap[macadd] = historicalDataList
                         withContext(Dispatchers.Main) {
-                            addNewPage(nowData.name ?: "하트호야", macadd)
+                            addNewPage(nowData.name ?: "하트호야", macadd, kakaoemail)
                         }
                         updateIndicators(0)
                         setNowDataListener(macadd, currentPosition)
@@ -660,7 +664,7 @@ class Fragment_Main_page: Fragment() {
     }
 
 
-    fun addNewPage(deviceType: String, deviceId:String) {
+    fun addNewPage(deviceType: String, deviceId:String, email:String) {
         if (fragments.lastOrNull() is Fragment_Blank2) {
             fragments.removeAt(fragments.size - 1)
             viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
@@ -668,12 +672,12 @@ class Fragment_Main_page: Fragment() {
 
 
         val fragment = when (deviceType) {
-            "하트호야" -> Fragment_main_Hearthoya.newInstance(fragments.size + 1,deviceId)
-            "스투키" -> Fragment_main_Stucky.newInstance(fragments.size + 1,deviceId)
-            "선인장" -> Fragment_main_Cactus.newInstance(fragments.size + 1,deviceId)
-            "피쉬본" -> Fragment_main_Fishbone.newInstance(fragments.size + 1,deviceId)
-            "괴마옥" -> Fragment_main_Haunted_house.newInstance(fragments.size + 1,deviceId)
-            else -> Fragment_main_Hearthoya.newInstance(fragments.size + 1, deviceId)
+            "하트호야" -> Fragment_main_Hearthoya.newInstance(fragments.size + 1,deviceId, email)
+            "스투키" -> Fragment_main_Stucky.newInstance(fragments.size + 1,deviceId, email)
+            "선인장" -> Fragment_main_Cactus.newInstance(fragments.size + 1,deviceId, email)
+            "피쉬본" -> Fragment_main_Fishbone.newInstance(fragments.size + 1,deviceId, email)
+            "괴마옥" -> Fragment_main_Haunted_house.newInstance(fragments.size + 1,deviceId, email)
+            else -> Fragment_main_Hearthoya.newInstance(fragments.size + 1, deviceId, email)
         }
 
         fragments.add(fragment)
@@ -690,11 +694,11 @@ class Fragment_Main_page: Fragment() {
         builder.setItems(items) { _, which ->
             // 다이얼로그에서 항목을 선택했을 때의 처리를 여기에 추가
             when (which) {
-                0 -> addNewPage_Hearthoya()
-                1 -> addNewPage_Stucky()
-                2 -> addNewPage_Cactus()
-                3 -> addNewPage_Fishbone()
-                4 -> addNewPage_Haunted_house()
+//                0 -> addNewPage_Hearthoya()
+////                1 -> addNewPage_Stucky()
+//                2 -> addNewPage_Cactus()
+//                3 -> addNewPage_Fishbone()
+//                4 -> addNewPage_Haunted_house()
                 5 -> {
                     // Intent로 hardtest 액티비티로 이동
                     val intent = Intent(requireContext(), hardtest::class.java)
@@ -750,56 +754,56 @@ class Fragment_Main_page: Fragment() {
             )
         }
     }
-    fun addNewPage_Hearthoya() {
-        if (fragments.lastOrNull() is Fragment_Blank2) {
-            fragments.removeAt(fragments.size - 1)
-            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
-        }
-
-        fragments.add(Fragment_main_Hearthoya.newInstance(fragments.size + 1, "Test"))
-        addNewPage2()
-        updateButtonInCurrentFragment()
-    }
-    fun addNewPage_Stucky() {
-        if (fragments.lastOrNull() is Fragment_Blank2) {
-            fragments.removeAt(fragments.size - 1)
-            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
-        }
-
-        fragments.add(Fragment_main_Stucky.newInstance(fragments.size + 1,"Test"))
-        addNewPage2()
-        updateButtonInCurrentFragment()
-    }
-    fun addNewPage_Cactus() {
-        if (fragments.lastOrNull() is Fragment_Blank2) {
-            fragments.removeAt(fragments.size - 1)
-            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
-        }
-
-        fragments.add(Fragment_main_Cactus.newInstance(fragments.size + 1,"Test"))
-        addNewPage2()
-        updateButtonInCurrentFragment()
-    }
-    fun addNewPage_Fishbone() {
-        if (fragments.lastOrNull() is Fragment_Blank2) {
-            fragments.removeAt(fragments.size - 1)
-            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
-        }
-
-        fragments.add(Fragment_main_Fishbone.newInstance(fragments.size + 1,"Test"))
-        addNewPage2()
-        updateButtonInCurrentFragment()
-    }
-    fun addNewPage_Haunted_house() {
-        if (fragments.lastOrNull() is Fragment_Blank2) {
-            fragments.removeAt(fragments.size - 1)
-            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
-        }
-
-        fragments.add(Fragment_main_Haunted_house.newInstance(fragments.size + 1,"Test"))
-        addNewPage2()
-        updateButtonInCurrentFragment()
-    }
+//    fun addNewPage_Hearthoya() {
+//        if (fragments.lastOrNull() is Fragment_Blank2) {
+//            fragments.removeAt(fragments.size - 1)
+//            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
+//        }
+//
+//        fragments.add(Fragment_main_Hearthoya.newInstance(fragments.size + 1, "Test"))
+//        addNewPage2()
+//        updateButtonInCurrentFragment()
+//    }
+//    fun addNewPage_Stucky() {
+//        if (fragments.lastOrNull() is Fragment_Blank2) {
+//            fragments.removeAt(fragments.size - 1)
+//            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
+//        }
+//
+//        fragments.add(Fragment_main_Stucky.newInstance(fragments.size + 1,"Test"))
+//        addNewPage2()
+//        updateButtonInCurrentFragment()
+//    }
+//    fun addNewPage_Cactus() {
+//        if (fragments.lastOrNull() is Fragment_Blank2) {
+//            fragments.removeAt(fragments.size - 1)
+//            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
+//        }
+//
+//        fragments.add(Fragment_main_Cactus.newInstance(fragments.size + 1,"Test"))
+//        addNewPage2()
+//        updateButtonInCurrentFragment()
+//    }
+//    fun addNewPage_Fishbone() {
+//        if (fragments.lastOrNull() is Fragment_Blank2) {
+//            fragments.removeAt(fragments.size - 1)
+//            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
+//        }
+//
+//        fragments.add(Fragment_main_Fishbone.newInstance(fragments.size + 1,"Test"))
+//        addNewPage2()
+//        updateButtonInCurrentFragment()
+//    }
+//    fun addNewPage_Haunted_house() {
+//        if (fragments.lastOrNull() is Fragment_Blank2) {
+//            fragments.removeAt(fragments.size - 1)
+//            viewPager.adapter?.notifyItemRemoved(fragments.size - 1)
+//        }
+//
+//        fragments.add(Fragment_main_Haunted_house.newInstance(fragments.size + 1,"Test"))
+//        addNewPage2()
+//        updateButtonInCurrentFragment()
+//    }
     fun addNewPage2() {
         val currentPosition = viewPager.currentItem
 

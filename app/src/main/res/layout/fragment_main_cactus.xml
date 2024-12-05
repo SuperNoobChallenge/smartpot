@@ -51,6 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10dp"
+            android:id="@+id/TextView_Cactus_Detail"
             android:text="작은 공간도 화사하게 만드는 친구"/>
 
         <TextView
@@ -58,6 +59,7 @@
             android:layout_height="wrap_content"
             android:textSize="20dp"
             android:textStyle="bold"
+            android:id="@+id/TextView_Cactus_Title"
             android:text="선인장"/>
     </LinearLayout>
     <LinearLayout
@@ -168,6 +170,7 @@
             <ImageView
                 android:layout_width="150dp"
                 android:layout_height="250dp"
+                android:id="@+id/TextView_Cactus_TitleImg"
                 android:src="@drawable/icon_main_cactus"/>
         </LinearLayout>
     </LinearLayout>

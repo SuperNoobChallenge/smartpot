@@ -51,6 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10dp"
+            android:id="@+id/TextView_Stucky_Detail"
             android:text="간결하고 강렬한 스타일로 독보적인 모습을 자랑하는 신선한"/>
 
         <TextView
@@ -58,6 +59,7 @@
             android:layout_height="wrap_content"
             android:textSize="20dp"
             android:textStyle="bold"
+            android:id="@+id/TextView_Stucky_Title"
             android:text="스투키"/>
     </LinearLayout>
     <LinearLayout
@@ -168,6 +170,7 @@
             <ImageView
                 android:layout_width="150dp"
                 android:layout_height="250dp"
+                android:id="@+id/TextView_Stucky_TitleImg"
                 android:src="@drawable/icon_main_stucky"/>
         </LinearLayout>
     </LinearLayout>
