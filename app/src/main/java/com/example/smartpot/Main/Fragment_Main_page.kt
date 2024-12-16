@@ -473,13 +473,14 @@ class Fragment_Main_page: Fragment() {
     }
 
     private fun removeFragment(position: Int) {
+        var positionn=position
         if(position==0){
-            viewPager.setCurrentItem(1, false)
+            viewPager.setCurrentItem(viewPager.size, false)
         }
-        var position=0
+        var position=positionn
         // 1. Fragment 리스트에서 제거
         fragments.removeAt(position)
-        viewPager.adapter?.notifyItemRemoved(viewPager.size-position-1)
+        viewPager.adapter?.notifyItemRemoved(position)
 
         // 2. 관련 데이터 제거
         val deviceId = DataHolder.userDevices.removeAt(position)
@@ -492,7 +493,7 @@ class Fragment_Main_page: Fragment() {
 
         // 4. 현재 포지션이 유효한지 확인하고, 필요시 포지션 조정
         val newPosition = if (position >= fragments.size) fragments.size - 1 else position
-        viewPager.setCurrentItem(newPosition, true)
+        viewPager.setCurrentItem(newPosition, false)
 
         // 5. 인디케이터 및 UI 업데이트
         updateIndicators(newPosition)
